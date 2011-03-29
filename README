@@ -1,0 +1,59 @@
+Bio-Parser-ISATab
+
+This module makes a gallant attempt to read ISA-Tab files for an investigation
+into one deep hash-based data structure.  It is read-only at the moment,
+and the best usage information can be found in the test scripts
+t/01-invest.t
+t/02-study.t
+t/03-assay.t
+
+It's in a very basic state at the moment.  Contributions, testing and
+general comments are welcome.  Limitations are listed in the main
+documentation 'perldoc Bio::Parser::ISATab'.
+
+LINKS
+
+ISA-Tab: http://isatab.sourceforge.net/specifications.html
+Source: http://github.com/bobular/Bio-Parser-ISATab
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc Bio::Parser::ISATab
+
+You can also look for information at:
+
+    RT, CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Bio-Parser-ISATab
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/Bio-Parser-ISATab
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/Bio-Parser-ISATab
+
+    Search CPAN
+        http://search.cpan.org/dist/Bio-Parser-ISATab/
+
+
+LICENSE AND COPYRIGHT
+
+Copyright (C) 2011 Bob MacCallum
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+

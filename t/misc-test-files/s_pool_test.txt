@@ -1,0 +1,4 @@
+Source Name	Characteristics [sex]	Sample Name	Characteristics [colour]
+source1	male	pool1	purple
+source2	female	pool1	purple
+source3	mixed_sex	sample2	brown
