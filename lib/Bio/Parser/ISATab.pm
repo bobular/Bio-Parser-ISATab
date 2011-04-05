@@ -199,8 +199,7 @@ sub parse {
   while (my $row = $self->tsv_parser->getline($i_fh)) {
     if (!defined $row->[0] || $row->[0] eq '' || $row->[0] =~ /^#/) {
       # this is a comment or an empty line
-    }
-    elsif (defined $section_headings{$row->[0]}) {
+    } elsif (defined $section_headings{$row->[0]}) {
       # we just moved into a new section
       # process previous table (warning: end of loop code duplication)
       if (defined $current_section && @$table) {
@@ -352,9 +351,9 @@ sub parse_study_or_assay {
 	    # now set the current node to be this child
 	    $current_node = $current_node->{$node_type}{$value};
 	    $last_biological_material = $current_node if ($node_type =~ /^(source|sample|extract|labeled)/); # hack alert!
-	    undef $current_attribute;
-	    undef $current_protocol;
 	  }
+	  undef $current_attribute;
+	  undef $current_protocol;
 	} elsif ($non_reusable_node_types{$header}) {
 	  # need step down one level into the DAG
 	  $node_type = $non_reusable_node_types{$header};
@@ -364,43 +363,41 @@ sub parse_study_or_assay {
 	    $current_node->{$node_type}{$value} = { };
 	    # now set the current node to be this child
 	    $current_node = $current_node->{$node_type}{$value};
-	    undef $current_attribute;
-	    undef $current_protocol;
 	  }
+	  undef $current_attribute;
+	  undef $current_protocol;
+	} elsif ($header =~ /^(Characteristics|Factor Value|Comment)\s*\[(.+)\]\s*$/) {
+	  my $key = lcu($1);
+	  my $type = $2;
+	  $key =~ s/s?$/s/; # make plural lowercase underscored, e.g. factor_values
+
+	  # factor values need special treatment (don't attach them to files and other non-reusable nodes)
+	  my $node_to_annotate = $key eq 'factor_values' ? $last_biological_material : $current_node;
+
+	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value) if (length($value));
+	  $current_attribute = $node_to_annotate->{$key}{$type};
+	} elsif ($header eq 'Material Type' || $header eq 'Label') {
+	  check_and_set(\$current_node->{lcu($header)}{value}, $value) if (length($value));
+	  $current_attribute = $current_node->{lcu($header)};
+	} elsif ($header eq 'Unit' && $current_attribute) {
+	  check_and_set(\$current_attribute->{unit}{value}, $value) if (length($value));
+	  $current_attribute = $current_attribute->{unit};
+	} elsif ($header eq 'Protocol REF' && length($value)) {
+	  if (!defined $current_node->{protocols}{$value}) {
+	    my $rank = 1 + keys %{$current_node->{protocols}};
+	    $current_node->{protocols}{$value} = { rank => $rank };
+	  }
+	  $current_protocol = $current_node->{protocols}{$value};
+	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
+	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value) if (length($value));
+	  $current_attribute = $current_protocol->{parameter_values}{$2};
+	} elsif ($current_attribute && length($value)) {
+	  check_and_set(\$current_attribute->{lcu($header)}, $value);
 	} elsif (length($value)) {
-
-	  if ($header =~ /^(Characteristics|Factor Value|Comment)\s*\[(.+)\]\s*$/) {
-	    my $key = lcu($1);
-	    my $type = $2;
-	    $key =~ s/s?$/s/; # make plural lowercase underscored, e.g. factor_values
-
-	    # factor values need special treatment (don't attach them to files and other non-reusable nodes)
-	    my $node_to_annotate = $key eq 'factor_values' ? $last_biological_material : $current_node;
-
-	    check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value);
-	    $current_attribute = $node_to_annotate->{$key}{$type};
-	  } elsif ($header eq 'Material Type' || $header eq 'Label') {
-	    check_and_set(\$current_node->{lcu($header)}{value}, $value);
-	    $current_attribute = $current_node->{lcu($header)};
-	  } elsif ($header eq 'Unit' && $current_attribute) {
-	    check_and_set(\$current_attribute->{unit}{value}, $value);
-	    $current_attribute = $current_attribute->{unit};
-	  } elsif ($header eq 'Protocol REF') {
-	    if (!defined $current_node->{protocols}{$value}) {
-	      my $rank = 1 + keys %{$current_node->{protocols}};
-	      $current_node->{protocols}{$value} = { rank => $rank };
-	    }
-	    $current_protocol = $current_node->{protocols}{$value};
-	  } elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
-	    check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value);
-	    $current_attribute = $current_protocol->{parameter_values}{$2};
-	  } elsif ($current_attribute) {
-	    #
-	    check_and_set(\$current_attribute->{lcu($header)}, $value);
-	    check_and_set(\$current_attribute->{lcu($header)}, $value);
-	  } else {
-	    carp "unexpected condition at $header => $value (could be legitimate)";
-	  }
+	  # this warning is really just for debugging - we don't want to let any non-empty cells through the net
+	  carp "probable valueless annotation of $headers->[$i-1] qualified by $header => $value (column $i of $study_file)";
+	} else {
+	  # it was just an empty cell
 	}
 
       }
@@ -466,7 +463,7 @@ sub process_table {
 
 	if (defined (my $plural_key = $semicolon_delimited{$row->[0]})) {
 	  # this row may need semicolon splitting
-	  my @values = split /\s*;\s*/, $row->[$i+1];
+	  my @values = split /\s*;\s*/, $row->[$i+1] || '';
 	  $num_values_seen{$plural_key}{scalar @values} = 1 if (@values > 0);
 	  if ($plural_key =~ /initials$/) {
 	    $isa_ptr->{$section_name}[$i]{$plural_key} = \@values;

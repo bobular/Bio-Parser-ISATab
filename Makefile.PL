@@ -6,7 +6,7 @@ WriteMakefile
   'VERSION_FROM' => 'lib/Bio/Parser/ISATab.pm',
   'PREREQ_PM' => {
                    'Test::More' => 0,
-                   'Text::CSV_XS' => 1
+                   'Text::CSV_XS' => 0.8,
                  },
   'INSTALLDIRS' => 'site',
   'EXE_FILES' => [],
