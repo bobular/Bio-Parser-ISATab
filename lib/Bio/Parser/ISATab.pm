@@ -255,6 +255,8 @@ sub parse {
       $assay->{sources} = $assaydata->{sources} if ($assaydata->{sources});
       $assay->{samples} = $assaydata->{samples} if ($assaydata->{samples});
     }
+    # create a lookup with keys like 'field collection', 'phenotype assay'
+    $self->create_lookup($study, 'study_assays', 'study_assay_lookup', 'study_assay_measurement_type');
   }
 
   return $isa;
@@ -549,7 +551,7 @@ sub create_lookup {
   foreach my $item (@{$hashref->{$arraykey}}) {
     croak "could not create $lookupkey from $arraykey due to missing $itemkey\n" unless ($item->{$itemkey});
     $hashref->{$lookupkey}{$item->{$itemkey}} = $item;
-  } 
+  }
 }
 
 
