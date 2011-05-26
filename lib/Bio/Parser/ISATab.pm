@@ -290,26 +290,29 @@ my %reusable_node_types = ('Source Name' => 'sources',
 #
 # these are columns which don't
 #
-my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformation',
-			       'Raw Data File' => 'raw_data_file',
-			       'Image File' => 'image_file',
+# note, values (used as keys in the $isa data structure) have been pluralised except for the array design
+#
+
+my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformations',
+			       'Raw Data File' => 'raw_data_files',
+			       'Image File' => 'image_files',
 			       'Array Design File' => 'array_design_file',
 			       'Array Design REF' => 'array_design_ref',
 ##?			       'Array Design File REF' => 'array_design_file_ref',
-			       'Derived Data File' => 'derived_data_file',
-			       'Array Data File' => 'array_data_file',
-			       'Derived Array Data File' => 'derived_array_data_file',
-			       'Array Data Matrix File' => 'array_data_matrix_file',
-			       'Derived Array Data Matrix File' => 'derived_array_data_matrix_file',
-			       'Spot Picking File' => 'spot_picking_file',
-			       'Raw Spectral Data File' => 'raw_spectral_data_file',
-			       'Derived Spectral Data File' => 'derived_spectral_data_file',
-			       'Peptide Assignment File' => 'peptide_assignment_file',
-			       'Protein Assignment File' => 'protein_assignment_file',
-			       'Post Translational Modification Assignment File' => 'post_translational_modification_assignment_file',
-			       'Free Induction Decay Data File' => 'free_induction_decay_data_file',
-			       'Acquisition Parameter Data File' => 'acquisition_parameter_data_file',
-			       'Metabolite Assignment File' => 'metabolite_assignment_file',
+			       'Derived Data File' => 'derived_data_files',
+			       'Array Data File' => 'array_data_files',
+			       'Derived Array Data File' => 'derived_array_data_files',
+			       'Array Data Matrix File' => 'array_data_matrix_files',
+			       'Derived Array Data Matrix File' => 'derived_array_data_matrix_files',
+			       'Spot Picking File' => 'spot_picking_files',
+			       'Raw Spectral Data File' => 'raw_spectral_data_files',
+			       'Derived Spectral Data File' => 'derived_spectral_data_files',
+			       'Peptide Assignment File' => 'peptide_assignment_files',
+			       'Protein Assignment File' => 'protein_assignment_files',
+			       'Post Translational Modification Assignment File' => 'post_translational_modification_assignment_files',
+			       'Free Induction Decay Data File' => 'free_induction_decay_data_files',
+			       'Acquisition Parameter Data File' => 'acquisition_parameter_data_files',
+			       'Metabolite Assignment File' => 'metabolite_assignment_files',
 );
 
 
@@ -397,7 +400,7 @@ sub parse_study_or_assay {
 	  check_and_set(\$current_attribute->{lcu($header)}, $value);
 	} elsif (length($value)) {
 	  # this warning is really just for debugging - we don't want to let any non-empty cells through the net
-	  carp "probable valueless annotation of $headers->[$i-1] qualified by $header => $value (column $i of $study_file)";
+	  # carp "probable valueless annotation of $headers->[$i-1] qualified by $header => $value (column $i of $study_file)";
 	} else {
 	  # it was just an empty cell
 	}
