@@ -10,7 +10,7 @@ my $parser = Bio::Parser::ISATab->new(directory=>'./t/BII-S-6');
 #
 # pooling test
 #
-my $sources = $parser->parse_study_or_assay('./t/misc-test-files/s_pool_test.txt');
+my $sources = $parser->parse_study_or_assay('../misc-test-files/s_pool_test.txt');
 
 # both are purple
 is($sources->{sources}{source1}{samples}{pool1}{characteristics}{colour}{value}, 'purple');

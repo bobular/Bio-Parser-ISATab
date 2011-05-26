@@ -245,13 +245,9 @@ sub parse {
   #
 
   foreach my $study (@{$isa->{studies}}) {
-    my $study_file = $self->directory()."/".$study->{study_file_name};
-    croak "can't find study file: $study_file for study $study->{study_identifier}"
-      unless (-e $study_file);
-    $study->{sources} = $self->parse_study_or_assay($study_file, $isa)->{sources};
+    $study->{sources} = $self->parse_study_or_assay($study->{study_file_name}, $isa)->{sources};
     foreach my $assay (@{$study->{study_assays}}) {
-      my $assay_file = $self->directory()."/".$assay->{study_assay_file_name};
-      my $assaydata = $self->parse_study_or_assay($assay_file, $isa);
+      my $assaydata = $self->parse_study_or_assay($assay->{study_assay_file_name}, $isa);
       $assay->{sources} = $assaydata->{sources} if ($assaydata->{sources});
       $assay->{samples} = $assaydata->{samples} if ($assaydata->{samples});
     }
@@ -324,6 +320,9 @@ sub parse_study_or_assay {
   my $headers;
   my $n;
   my $node_type_cache = { }; # node_type -> name -> { ... } # allows pooling
+
+  $study_file = $self->directory()."/".$study_file;
+
   open(my $s_fh, $study_file) or croak "couldn't open $study_file";
   while (my $row = $self->tsv_parser->getline($s_fh)) {
     #carp join("\t", @$row); #debugging
