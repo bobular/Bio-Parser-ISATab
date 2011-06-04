@@ -471,7 +471,7 @@ sub process_table {
 
 	if (defined (my $plural_key = $semicolon_delimited{$row->[0]})) {
 	  # this row may need semicolon splitting
-	  my @values = split /\s*;\s*/, $row->[$i+1] || '';
+	  my @values = split /\s*;\s*/, ($row->[$i+1] || ''), -1;
 	  $num_values_seen{$plural_key}{scalar @values} = 1 if (@values > 0);
 	  if ($plural_key =~ /initials$/) {
 	    $isa_ptr->{$section_name}[$i]{$plural_key} = \@values;
