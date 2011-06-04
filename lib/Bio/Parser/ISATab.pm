@@ -237,6 +237,10 @@ sub parse {
   $self->create_lookup($isa, 'ontologies', 'ontology_lookup', 'term_source_name');
   foreach my $study (@{$isa->{studies}}) {
     $self->create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
+    foreach my $protocol_name (keys %{$study->{study_protocol_lookup}}) {
+      my $protocol = $study->{study_protocol_lookup}{$protocol_name};
+      $self->create_lookup($protocol, 'study_protocol_parameters', 'study_protocol_parameter_lookup', 'study_protocol_parameter_name');
+    }
     $self->create_lookup($study, 'study_factors', 'study_factor_lookup', 'study_factor_name');
   }
 

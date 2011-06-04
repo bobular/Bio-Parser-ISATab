@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 23;
+use Test::More tests => 24;
 use Data::Dumper;
 
 use Bio::Parser::ISATab;
@@ -49,6 +49,7 @@ is($isa->{studies}[0]{study_assays}[1]{study_assay_technology_platform}, 'iTRAQ'
 
 is($isa->{ontology_lookup}{'PATO'}{term_source_description}, 'Phenotypic qualities (properties)');
 is($isa->{studies}[0]{study_protocol_lookup}{'biotin labeling'}{study_protocol_type}, 'labeling');
+is($isa->{studies}[0]{study_protocol_lookup}{'metabolite extraction'}{study_protocol_parameter_lookup}{'sample volume'}{study_protocol_parameter_name}, 'sample volume');
 
 $Data::Dumper::Indent = 1;
 #diag(Dumper($isa));
