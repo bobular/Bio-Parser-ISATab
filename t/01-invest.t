@@ -1,5 +1,3 @@
-#!perl -T
-
 use Test::More tests => 24;
 use Data::Dumper;
 

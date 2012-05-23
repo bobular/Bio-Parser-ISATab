@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use Carp;
 use Text::CSV_XS;
-
+use Tie::Hash::Indexed;
 use Data::Dumper;
 
 =head1 NAME
@@ -176,7 +176,7 @@ $isa->{ontology_lookup}{NAME}{term_source_file} = '...'; # etc
 
 sub parse {
   my $self = shift;
-  my $isa = {};
+  my $isa = ordered_hashref();
   $isa->{studies} = [];
 
   croak "Can't find ISA-Tab directory '".$self->directory."'" unless (-d $self->directory);
@@ -210,7 +210,7 @@ sub parse {
 
       # special treatment of new STUDY section (vertically repeatable)
       if ($current_section eq 'study') {
-	$isa->{studies}[++$study_index] = {};
+	$isa->{studies}[++$study_index] = ordered_hashref();
       }
     } elsif ($current_section =~ /s$/) {
       # we're in a multi-column section, so add to $table
@@ -319,11 +319,11 @@ my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformatio
 sub parse_study_or_assay {
   my ($self, $study_file, $isa) = @_;
 
-  my $result = {};
+  my $result = ordered_hashref();
 
   my $headers;
   my $n;
-  my $node_type_cache = { }; # node_type -> name -> { ... } # allows pooling
+  my $node_type_cache = ordered_hashref(); # node_type -> name -> { ... } # allows pooling
 
   $study_file = $self->directory()."/".$study_file;
 
@@ -353,8 +353,9 @@ sub parse_study_or_assay {
 
 	  if (length($value)) {
 	    # see if we already have a node by this name ($value) at this level ($node_type)
-	    $node_type_cache->{$node_type}{$value} = $node_type_cache->{$node_type}{$value} || { };
+	    $node_type_cache->{$node_type}{$value} = $node_type_cache->{$node_type}{$value} || ordered_hashref();
 	    # assigning the new (or reused) node as a child of the 'current node'
+	    $current_node->{$node_type} ||= ordered_hashref();
 	    $current_node->{$node_type}{$value} = $node_type_cache->{$node_type}{$value};
 	    # now set the current node to be this child
 	    $current_node = $current_node->{$node_type}{$value};
@@ -368,7 +369,7 @@ sub parse_study_or_assay {
 
 	  if (length($value)) {
 	    # assigning the new node as a child of the 'current node'
-	    $current_node->{$node_type}{$value} = { };
+	    $current_node->{$node_type}{$value} = ordered_hashref();
 	    # now set the current node to be this child
 	    $current_node = $current_node->{$node_type}{$value};
 	  }
@@ -391,10 +392,8 @@ sub parse_study_or_assay {
 	  check_and_set(\$current_attribute->{unit}{value}, $value) if (length($value));
 	  $current_attribute = $current_attribute->{unit};
 	} elsif ($header eq 'Protocol REF' && length($value)) {
-	  if (!defined $current_node->{protocols}{$value}) {
-	    my $rank = 1 + keys %{$current_node->{protocols}};
-	    $current_node->{protocols}{$value} = { rank => $rank };
-	  }
+	  $current_node->{protocols} ||= ordered_hashref();
+	  $current_node->{protocols}{$value} ||= ordered_hashref();
 	  $current_protocol = $current_node->{protocols}{$value};
 	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
 	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value) if (length($value));
@@ -560,6 +559,22 @@ sub create_lookup {
   }
 }
 
+
+=head2 ordered_hashref
+
+Wrapper for Tie::Hash::Indexed - returns a hashref which has already been tied to Tie::Hash::Indexed
+
+no args.
+
+usage: $foo->{bar} = ordered_hashref();  $foo->{bar}{hello} = 123;
+
+=cut
+
+sub ordered_hashref {
+  my $ref = {};
+  tie %{$ref}, 'Tie::Hash::Indexed';
+  return $ref;
+}
 
 =head1 AUTHOR
 

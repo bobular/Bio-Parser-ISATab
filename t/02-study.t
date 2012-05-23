@@ -1,5 +1,3 @@
-#!perl -T
-
 use Test::More tests => 10;
 use Data::Dumper;
 
@@ -31,7 +29,6 @@ is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{characteristics}{'strain
 is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{characteristics}{'strain'}{term_source_ref}, 'NEWT');
 is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{characteristics}{'strain'}{term_accession_number}, 10116);
 
-is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{protocols}{'P-BMAP-1'}{rank}, 1);
 is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{protocols}{'P-BMAP-1'}{parameter_values}{dose}{value}, 150);
 is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{protocols}{'P-BMAP-1'}{parameter_values}{dose}{unit}{value}, 'mg/kg/day'); # no UO term in this case
 
@@ -40,6 +37,66 @@ is($isa->{studies}[0]{sources}{'ro.Group-12.Subject-3'}{protocols}{'P-BMAP-1'}{p
 is($isa->{studies}[0]{sources}{'ro.Group-8.Subject-2'}{samples}{'ro.Group-8.Subject-2.BTO:liver'}{characteristics}{'organism part'}{value}, 'liver');
 
 
+#
+# check sources are in order
+#
+
+is(join('', map "$_\n", keys %{$isa->{studies}[0]{sources}}), <<'EOF', "sources are in order");
+ro.Group-1.Subject-1
+ro.Group-1.Subject-2
+ro.Group-1.Subject-3
+ro.Group-2.Subject-1
+ro.Group-2.Subject-2
+ro.Group-2.Subject-3
+ro.Group-3.Subject-1
+ro.Group-3.Subject-2
+ro.Group-3.Subject-3
+ro.Group-4.Subject-1
+ro.Group-4.Subject-2
+ro.Group-4.Subject-3
+ro.Group-5.Subject-1
+ro.Group-5.Subject-2
+ro.Group-5.Subject-3
+ro.Group-6.Subject-1
+ro.Group-6.Subject-2
+ro.Group-6.Subject-3
+ro.Group-7.Subject-1
+ro.Group-7.Subject-2
+ro.Group-7.Subject-3
+ro.Group-8.Subject-1
+ro.Group-8.Subject-2
+ro.Group-8.Subject-3
+ro.Group-9.Subject-1
+ro.Group-9.Subject-2
+ro.Group-9.Subject-3
+ro.Group-10.Subject-1
+ro.Group-10.Subject-2
+ro.Group-10.Subject-3
+ro.Group-11.Subject-1
+ro.Group-11.Subject-2
+ro.Group-11.Subject-3
+ro.Group-12.Subject-1
+ro.Group-12.Subject-2
+ro.Group-12.Subject-3
+ro.Group13.Subject-1
+ro.Group13.Subject-2
+ro.Group13.Subject-3
+ro.Group14.Subject-1
+ro.Group14.Subject-2
+ro.Group14.Subject-3
+ro.Group15.Subject-1
+ro.Group15.Subject-2
+ro.Group15.Subject-3
+ro.Group16.Subject-1
+ro.Group16.Subject-2
+ro.Group16.Subject-3
+ro.Group17.Subject-1
+ro.Group17.Subject-2
+ro.Group18.Subject-1
+ro.Group18.Subject-2
+ro.Group18.Subject-3
+ro.Group-10.Subject-4
+EOF
 
 $Data::Dumper::Indent = 1;
 #diag(Dumper($isa));

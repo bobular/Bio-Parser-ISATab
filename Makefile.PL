@@ -7,6 +7,7 @@ WriteMakefile
   'PREREQ_PM' => {
                    'Test::More' => 0,
                    'Text::CSV_XS' => 0.8,
+		   'Tie::Hash::Indexed' => 0,
                  },
   'INSTALLDIRS' => 'site',
   'EXE_FILES' => [],
