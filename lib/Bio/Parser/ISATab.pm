@@ -353,7 +353,7 @@ sub parse_study_or_assay {
 
 	  if (length($value)) {
 	    # see if we already have a node by this name ($value) at this level ($node_type)
-	    $node_type_cache->{$node_type}{$value} = $node_type_cache->{$node_type}{$value} || ordered_hashref();
+	    $node_type_cache->{$node_type}{$value} ||= ordered_hashref();
 	    # assigning the new (or reused) node as a child of the 'current node'
 	    $current_node->{$node_type} ||= ordered_hashref();
 	    $current_node->{$node_type}{$value} = $node_type_cache->{$node_type}{$value};
@@ -382,7 +382,7 @@ sub parse_study_or_assay {
 
 	  # factor values need special treatment (don't attach them to files and other non-reusable nodes)
 	  my $node_to_annotate = $key eq 'factor_values' ? $last_biological_material : $current_node;
-
+	  $node_to_annotate->{$key} ||= ordered_hashref();
 	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value) if (length($value));
 	  $current_attribute = $node_to_annotate->{$key}{$type};
 	} elsif ($header eq 'Material Type' || $header eq 'Label') {
