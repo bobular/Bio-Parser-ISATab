@@ -400,6 +400,10 @@ sub parse_study_or_assay {
 	  $current_attribute = $current_protocol->{parameter_values}{$2};
 	} elsif ($current_attribute && length($value)) {
 	  check_and_set(\$current_attribute->{lcu($header)}, $value);
+	} elsif ($header eq 'Description' && length($value)) {
+	  # simply stored as $node->{description} = "text ...";
+	  # NOT $node->{description}{value} = ...
+	  check_and_set(\$current_node->{lcu($header)}, $value);
 	} elsif (length($value)) {
 	  # this warning is really just for debugging - we don't want to let any non-empty cells through the net
 	  # carp "probable valueless annotation of $headers->[$i-1] qualified by $header => $value (column $i of $study_file)";
