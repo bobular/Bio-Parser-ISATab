@@ -266,9 +266,16 @@ sub parse {
 
 =head2 parse_study_or_assay
 
-args: $self, $filename, $isa
+args: $self, $filename, $isa, $custom_column_headings
 
 $isa is OPTIONAL (for checking that protocols and ontologies have been defined)
+
+$custom_column_headings is a hashref like this
+  {
+    Type => 1,
+    Observable => 1,
+  }
+which adds extra attribute-like columns (like "Material Type" in standard ISA-Tab)
 
 =cut
 
@@ -317,7 +324,7 @@ my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformatio
 
 
 sub parse_study_or_assay {
-  my ($self, $study_file, $isa) = @_;
+  my ($self, $study_file, $isa, $custom_column_headings) = @_;
 
   my $result = ordered_hashref();
 
@@ -375,7 +382,7 @@ sub parse_study_or_assay {
 	  }
 	  undef $current_attribute;
 	  undef $current_protocol;
-	} elsif ($header =~ /^(Characteristics|Factor Value|Comment)\s*\[(.+)\]\s*$/) {
+	} elsif ($header =~ /^(Characteristics|Factor Value)\s*\[(.+)\]\s*$/) {
 	  my $key = lcu($1);
 	  my $type = $2;
 	  $key =~ s/s?$/s/; # make plural lowercase underscored, e.g. factor_values
@@ -385,7 +392,8 @@ sub parse_study_or_assay {
 	  $node_to_annotate->{$key} ||= ordered_hashref();
 	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value) if (length($value));
 	  $current_attribute = $node_to_annotate->{$key}{$type};
-	} elsif ($header eq 'Material Type' || $header eq 'Label') {
+	} elsif ($header eq 'Material Type' || $header eq 'Label' ||
+		 ($custom_column_headings && $custom_column_headings->{$header})) {
 	  check_and_set(\$current_node->{lcu($header)}{value}, $value) if (length($value));
 	  $current_attribute = $current_node->{lcu($header)};
 	} elsif ($header eq 'Unit' && $current_attribute) {
@@ -398,7 +406,9 @@ sub parse_study_or_assay {
 	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
 	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value) if (length($value));
 	  $current_attribute = $current_protocol->{parameter_values}{$2};
-	} elsif ($current_attribute && length($value)) {
+	} elsif ($header =~ /^(Performer|Date)$/ && $current_protocol) {
+	  check_and_set(\$current_protocol->{$1}, $value) if (length($value));
+	} elsif ($header =~ /^Term (Source REF|Accession Number)$/i && $current_attribute && length($value)) {
 	  check_and_set(\$current_attribute->{lcu($header)}, $value);
 	} elsif ($header eq 'Description' && length($value)) {
 	  # simply stored as $node->{description} = "text ...";

@@ -1,0 +1,2 @@
+"Sample Name"	"Assay Name"	"Amazingness"	"Term Source REF"	"Term Accession Number"	"Coolness"	"Sickness"
+"sample zero"	"AssayX"	lots	PATO	0012345	little	dreadful
