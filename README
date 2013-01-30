@@ -11,6 +11,14 @@ It's in a very basic state at the moment.  Contributions, testing and
 general comments are welcome.  Limitations are listed in the main
 documentation 'perldoc Bio::Parser::ISATab'.
 
+To get a good idea of the hash structure, see the test scripts for
+how to load in an ISA-Tab directory - create a VERY small (one or two sample)
+ISA-Tab file, load it and do:
+
+  use Data::Dumper;
+  print Dumper($isa);
+
+
 LINKS
 
 ISA-Tab: http://isatab.sourceforge.net/specifications.html
