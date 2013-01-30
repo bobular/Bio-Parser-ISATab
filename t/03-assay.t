@@ -1,4 +1,4 @@
-use Test::More tests => 5;
+use Test::More tests => 7;
 use Data::Dumper;
 
 use Bio::Parser::ISATab;
@@ -15,7 +15,13 @@ $Data::Dumper::Indent = 1;
 
 # now load a custom assay file with extra columns "Amazingness" and "Coolness" analagous to "Material Type" and "Label"
 
-my $custom = $parser->parse_study_or_assay('../misc-test-files/a_custom-cols.txt', $isa, { 'Amazingness'=>1, 'Coolness'=>1 });
+my $custom = $parser->parse_study_or_assay('../misc-test-files/a_custom-cols.txt', $isa,
+					   {
+					    'Amazingness' => 'attribute',
+					    'Coolness' => 'attribute',
+					    'Widget Name' => 'reusable node',
+					    'Institution Name' => 'non-reusable node',
+					   });
 
 
 #diag(Dumper($custom));
@@ -33,6 +39,20 @@ is($custom->{samples}{'sample zero'}{assays}{'AssayX'}{coolness}{value}, 'little
 
 ok(!exists $custom->{samples}{'sample zero'}{assays}{'AssayX'}{sickness}, "shouldn't load Sickness column");
 
+diag(Dumper($custom->{samples}{'sample zero'}{assays}{'AssayX'}));
+
+is_deeply($custom->{samples}{'sample zero'}{assays}{'AssayX'}{institutions}{Anonymous}{widgets},
+	  {
+	   WidgetZ => {
+		       coolness => { value => 'sub-zero' },
+#		       comments => { feedback => 'could do better' },
+		      }
+	  },
+	  "test reusable node custom column");
+
+isnt($custom->{samples}{'sample zero'}{assays}{'AssayX'}{institutions}{Anonymous},
+     $custom->{samples}{'sample one'}{assays}{'AssayY'}{institutions}{Anonymous},
+     "did not re-use institution node");
 
 # now test performers and dates (only after Protocol REFs)
 

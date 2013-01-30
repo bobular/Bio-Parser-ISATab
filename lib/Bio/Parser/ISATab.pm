@@ -8,6 +8,8 @@ use Text::CSV_XS;
 use Tie::Hash::Indexed;
 use Data::Dumper;
 
+require 5.10.0;
+
 =head1 NAME
 
 Bio::Parser::ISATab - Parse ISA-Tab to a hash-based data structure.
@@ -266,16 +268,21 @@ sub parse {
 
 =head2 parse_study_or_assay
 
-args: $self, $filename, $isa, $custom_column_headings
+args: $self, $filename, $isa, $custom_column_types
 
 $isa is OPTIONAL (for checking that protocols and ontologies have been defined)
 
-$custom_column_headings is a hashref like this
+$custom_column_types is a hashref like this
+
   {
-    Type => 1,
-    Observable => 1,
+    'Phenotype Name' => 'reusable node',
+    Type => 'attribute',
+    Observable => 'attribute',
   }
-which adds extra attribute-like columns (like "Material Type" in standard ISA-Tab)
+
+which adds another node type
+('non-reusable node' is another allowed type)
+and two extra attribute-like columns (like "Material Type" in standard ISA-Tab)
 
 =cut
 
@@ -294,8 +301,13 @@ my %reusable_node_types = ('Source Name' => 'sources',
 			   'Scan Name' => 'scans',
 			   'Normalization Name' => 'normalizations', # maybe make non-reusable?
 );
+
 #
-# these are columns which don't
+# and these are columns which don't.
+#
+# The point here is that an Array Design REF might be used in all assays but the columns to the
+# right of this column would be different so you can't "re-use" the data you read in for
+# the previous row with the same Array Design REF.
 #
 # note, values (used as keys in the $isa data structure) have been pluralised except for the array design
 #
@@ -324,7 +336,7 @@ my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformatio
 
 
 sub parse_study_or_assay {
-  my ($self, $study_file, $isa, $custom_column_headings) = @_;
+  my ($self, $study_file, $isa, $custom_column_types) = @_;
 
   my $result = ordered_hashref();
 
@@ -354,9 +366,10 @@ sub parse_study_or_assay {
       for (my $i=0; $i<$n; $i++) {
 	my $header = $headers->[$i];
 	my $value = defined $row->[$i] ? $row->[$i] : '';
-	if ($reusable_node_types{$header}) { ## $header =~ /^(.+?)\s+(Name)$/) {
+	if ($reusable_node_types{$header} ||
+	    (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'reusable node')) {
 	  # need step down one level into the DAG
-	  $node_type = $reusable_node_types{$header};
+	  $node_type = $reusable_node_types{$header} // pluralise_custom_column($header);
 
 	  if (length($value)) {
 	    # see if we already have a node by this name ($value) at this level ($node_type)
@@ -370,9 +383,11 @@ sub parse_study_or_assay {
 	  }
 	  undef $current_attribute;
 	  undef $current_protocol;
-	} elsif ($non_reusable_node_types{$header}) {
+	} elsif ($non_reusable_node_types{$header} ||
+		 (defined $custom_column_types->{$header} &&
+		  $custom_column_types->{$header} eq 'non-reusable node')) {
 	  # need step down one level into the DAG
-	  $node_type = $non_reusable_node_types{$header};
+	  $node_type = $non_reusable_node_types{$header} // pluralise_custom_column($header);
 
 	  if (length($value)) {
 	    # assigning the new node as a child of the 'current node'
@@ -393,7 +408,7 @@ sub parse_study_or_assay {
 	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value) if (length($value));
 	  $current_attribute = $node_to_annotate->{$key}{$type};
 	} elsif ($header eq 'Material Type' || $header eq 'Label' ||
-		 ($custom_column_headings && $custom_column_headings->{$header})) {
+		 (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'attribute')) {
 	  check_and_set(\$current_node->{lcu($header)}{value}, $value) if (length($value));
 	  $current_attribute = $current_node->{lcu($header)};
 	} elsif ($header eq 'Unit' && $current_attribute) {
@@ -546,6 +561,25 @@ sub plural_subkey {
 #    return $out;
 #  }
 }
+
+=head2 pluralise_custom_column
+
+Naively lower-case pluralises the column name, removing "name" as appropriate.
+
+e.g.
+  "Widget Name" -> "widgets"
+  "Special Instrument Name" -> "special_instruments"
+  "Sheep Name" -> "sheeps"
+
+=cut
+
+sub pluralise_custom_column {
+  my ($input) = @_;
+  $input = lcu($input);
+  $input =~ s/_name$//;
+  return $input.'s';
+}
+
 
 
 =head2 create_lookup

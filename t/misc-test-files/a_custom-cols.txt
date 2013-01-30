@@ -1,2 +1,3 @@
-"Sample Name"	"Assay Name"	"Amazingness"	"Term Source REF"	"Term Accession Number"	"Coolness"	"Sickness"
-"sample zero"	"AssayX"	lots	PATO	0012345	little	dreadful
+"Sample Name"	"Assay Name"	"Comment [awesomeness]"	"Amazingness"	"Term Source REF"	"Term Accession Number"	"Coolness"	"Sickness"	"Institution Name"	"Comment [address]"	"Widget Name"	"Coolness"	"Comment [feedback]"
+"sample zero"	"AssayX"	overwhelming	lots	PATO	0012345	little	dreadful	Anonymous	everywhere	WidgetZ	sub-zero	"could do better"
+"sample one"	"AssayY"	yes	lots and lots	PATO	0012346	medium	OK	Anonymous	everywhere	WidgetQ	poor	"no comment"
