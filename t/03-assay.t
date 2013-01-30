@@ -25,6 +25,7 @@ my $custom = $parser->parse_study_or_assay('../misc-test-files/a_custom-cols.txt
 
 
 #diag(Dumper($custom));
+diag(Dumper($custom->{samples}{'sample zero'}));
 
 
 is_deeply($custom->{samples}{'sample zero'}{assays}{'AssayX'}{amazingness},
@@ -39,13 +40,12 @@ is($custom->{samples}{'sample zero'}{assays}{'AssayX'}{coolness}{value}, 'little
 
 ok(!exists $custom->{samples}{'sample zero'}{assays}{'AssayX'}{sickness}, "shouldn't load Sickness column");
 
-diag(Dumper($custom->{samples}{'sample zero'}{assays}{'AssayX'}));
 
 is_deeply($custom->{samples}{'sample zero'}{assays}{'AssayX'}{institutions}{Anonymous}{widgets},
 	  {
 	   WidgetZ => {
 		       coolness => { value => 'sub-zero' },
-#		       comments => { feedback => 'could do better' },
+		       comments => { feedback => 'could do better' },
 		      }
 	  },
 	  "test reusable node custom column");

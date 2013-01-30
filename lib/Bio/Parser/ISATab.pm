@@ -280,8 +280,8 @@ $custom_column_types is a hashref like this
     Observable => 'attribute',
   }
 
-which adds another node type
-('non-reusable node' is another allowed type)
+which adds another (pooling) node type
+('non-reusable node' (non-pooling) is another allowed type)
 and two extra attribute-like columns (like "Material Type" in standard ISA-Tab)
 
 =cut
@@ -407,6 +407,10 @@ sub parse_study_or_assay {
 	  $node_to_annotate->{$key} ||= ordered_hashref();
 	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value) if (length($value));
 	  $current_attribute = $node_to_annotate->{$key}{$type};
+	} elsif ($header =~ /^Comment\s*\[(.+)\]\s*$/) {
+	  my $type = $1;
+	  $current_node->{comments} ||= ordered_hashref();
+	  check_and_set(\$current_node->{comments}{$type}, $value) if (length($value));
 	} elsif ($header eq 'Material Type' || $header eq 'Label' ||
 		 (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'attribute')) {
 	  check_and_set(\$current_node->{lcu($header)}{value}, $value) if (length($value));
