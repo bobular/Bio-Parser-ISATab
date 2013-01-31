@@ -594,7 +594,7 @@ example
 
   create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
   # or from outside this package
-  Bio::Parser::ISATab::create_lookup($isa, 'study_contacts', 'study_contact_lookup', 'study_person_email');
+  Bio::Parser::ISATab::create_lookup($study, 'study_contacts', 'study_contact_lookup', 'study_person_email');
 
 This will go through the array of study_protocols, and create "shortcuts" to the protocols
 using the study_protocol_name as the lookup key
