@@ -236,14 +236,14 @@ sub parse {
   #
   # create the convenience lookups for ontologies and protocols
   #
-  $self->create_lookup($isa, 'ontologies', 'ontology_lookup', 'term_source_name');
+  create_lookup($isa, 'ontologies', 'ontology_lookup', 'term_source_name');
   foreach my $study (@{$isa->{studies}}) {
-    $self->create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
+    create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
     foreach my $protocol_name (keys %{$study->{study_protocol_lookup}}) {
       my $protocol = $study->{study_protocol_lookup}{$protocol_name};
-      $self->create_lookup($protocol, 'study_protocol_parameters', 'study_protocol_parameter_lookup', 'study_protocol_parameter_name');
+      create_lookup($protocol, 'study_protocol_parameters', 'study_protocol_parameter_lookup', 'study_protocol_parameter_name');
     }
-    $self->create_lookup($study, 'study_factors', 'study_factor_lookup', 'study_factor_name');
+    create_lookup($study, 'study_factors', 'study_factor_lookup', 'study_factor_name');
   }
 
   #
@@ -258,7 +258,7 @@ sub parse {
       $assay->{samples} = $assaydata->{samples} if ($assaydata->{samples});
     }
     # create a lookup with keys like 'field collection', 'phenotype assay'
-    $self->create_lookup($study, 'study_assays', 'study_assay_lookup', 'study_assay_measurement_type');
+    create_lookup($study, 'study_assays', 'study_assay_lookup', 'study_assay_measurement_type');
   }
 
   return $isa;
@@ -588,11 +588,13 @@ sub pluralise_custom_column {
 
 =head2 create_lookup
 
-args: $self, $hashref, $arraykey, $lookupkey, $itemkey
+args: $hashref, $arraykey, $lookupkey, $itemkey
 
 example
 
-  $self->create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
+  create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
+  # or from outside this package
+  Bio::Parser::ISATab::create_lookup($isa, 'study_contacts', 'study_contact_lookup', 'study_person_email');
 
 This will go through the array of study_protocols, and create "shortcuts" to the protocols
 using the study_protocol_name as the lookup key
@@ -604,7 +606,7 @@ using the study_protocol_name as the lookup key
 
 
 sub create_lookup {
-  my ($self, $hashref, $arraykey, $lookupkey, $itemkey) = @_;
+  my ($hashref, $arraykey, $lookupkey, $itemkey) = @_;
   foreach my $item (@{$hashref->{$arraykey}}) {
     croak "could not create $lookupkey from $arraykey due to missing $itemkey\n" unless ($item->{$itemkey});
     $hashref->{$lookupkey}{$item->{$itemkey}} = $item;
