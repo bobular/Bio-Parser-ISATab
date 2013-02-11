@@ -8,7 +8,7 @@ use Text::CSV_XS;
 use Tie::Hash::Indexed;
 use Data::Dumper;
 
-require 5.10.0;
+require 5.10.1;
 
 =head1 NAME
 
@@ -423,6 +423,7 @@ sub parse_study_or_assay {
 	  $current_node->{protocols}{$value} ||= ordered_hashref();
 	  $current_protocol = $current_node->{protocols}{$value};
 	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
+	  $current_protocol->{parameter_values} ||= ordered_hashref();
 	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value) if (length($value));
 	  $current_attribute = $current_protocol->{parameter_values}{$2};
 	} elsif ($header =~ /^(Performer|Date)$/ && $current_protocol) {
