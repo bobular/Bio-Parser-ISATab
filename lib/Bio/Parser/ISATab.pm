@@ -242,6 +242,7 @@ sub parse {
     foreach my $protocol_name (keys %{$study->{study_protocol_lookup}}) {
       my $protocol = $study->{study_protocol_lookup}{$protocol_name};
       create_lookup($protocol, 'study_protocol_parameters', 'study_protocol_parameter_lookup', 'study_protocol_parameter_name');
+      create_lookup($protocol, 'study_protocol_components', 'study_protocol_component_lookup', 'study_protocol_component_name');
     }
     create_lookup($study, 'study_factors', 'study_factor_lookup', 'study_factor_name');
   }
