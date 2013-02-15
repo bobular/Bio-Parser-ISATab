@@ -428,7 +428,7 @@ sub parse_study_or_assay {
 	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value) if (length($value));
 	  $current_attribute = $current_protocol->{parameter_values}{$2};
 	} elsif ($header =~ /^(Performer|Date)$/ && $current_protocol) {
-	  check_and_set(\$current_protocol->{$1}, $value) if (length($value));
+	  check_and_set(\$current_protocol->{lc($1)}, $value) if (length($value));
 	} elsif ($header =~ /^Term (Source REF|Accession Number)$/i && $current_attribute && length($value)) {
 	  check_and_set(\$current_attribute->{lcu($header)}, $value);
 	} elsif ($header eq 'Description' && length($value)) {
