@@ -1,6 +1,6 @@
 package Bio::Parser::ISATab;
 
-use Moose;
+use Mouse;
 use warnings;
 use strict;
 use Carp;
@@ -690,8 +690,6 @@ See http://dev.perl.org/licenses/ for more information.
 
 
 =cut
-
-no Moose;
 
 __PACKAGE__->meta->make_immutable;
 

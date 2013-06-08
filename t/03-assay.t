@@ -63,8 +63,8 @@ my $performer = $parser->parse_study_or_assay('../misc-test-files/a_performer-da
 is_deeply($performer->{samples}{'sample zero'}{assays}{AssayX}{protocols},
 	  {
 	   'MYPROTO' => {
-			 'Performer' => 'Bob',
-			 'Date' => '2000-01-01',
+			 'performer' => 'Bob',
+			 'date' => '2000-01-01',
 			 'parameter_values' => {
 						'food' => {
 							   'value' => 'toast'
