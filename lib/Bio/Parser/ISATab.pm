@@ -137,6 +137,7 @@ my %semicolon_delimited = ( 'Investigation Person Mid Initials' => 'investigatio
 
 			    'Investigation Person Roles' => 'investigation_person_roles',
 			    'Investigation Person Roles Term Accession Number' => 'investigation_person_roles',
+			    'Investigation Person Roles Term Source Ref' => 'investigation_person_roles',
 			    'Investigation Person Roles Term Source REF' => 'investigation_person_roles',
 
 			    #typo/inconsistency in ISA-Tab 1.0RC1 specs
@@ -145,15 +146,18 @@ my %semicolon_delimited = ( 'Investigation Person Mid Initials' => 'investigatio
 
 			    'Study Protocol Parameters Name' => 'study_protocol_parameters',
 			    'Study Protocol Parameters Name Term Accession Number' => 'study_protocol_parameters',
+			    'Study Protocol Parameters Name Term Source Ref' => 'study_protocol_parameters',
 			    'Study Protocol Parameters Name Term Source REF' => 'study_protocol_parameters',
 
 			    'Study Protocol Components Name' => 'study_protocol_components',
 			    'Study Protocol Components Type' => 'study_protocol_components',
 			    'Study Protocol Components Type Term Accession Number' => 'study_protocol_components',
+			    'Study Protocol Components Type Term Source Ref' => 'study_protocol_components',
 			    'Study Protocol Components Type Term Source REF' => 'study_protocol_components',
 
 			    'Study Person Roles' => 'study_person_roles',
 			    'Study Person Roles Term Accession Number' => 'study_person_roles',
+			    'Study Person Roles Term Source Ref' => 'study_person_roles',
 			    'Study Person Roles Term Source REF' => 'study_person_roles',
 );
 
@@ -318,6 +322,7 @@ my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformatio
 			       'Image File' => 'image_files',
 			       'Array Design File' => 'array_design_file',
 			       'Array Design REF' => 'array_design_ref',
+			       'Array Design Ref' => 'array_design_ref',
 ##?			       'Array Design File REF' => 'array_design_file_ref',
 			       'Derived Data File' => 'derived_data_files',
 			       'Array Data File' => 'array_data_files',
@@ -419,7 +424,7 @@ sub parse_study_or_assay {
 	} elsif ($header eq 'Unit' && $current_attribute) {
 	  check_and_set(\$current_attribute->{unit}{value}, $value) if (length($value));
 	  $current_attribute = $current_attribute->{unit};
-	} elsif ($header eq 'Protocol REF' && length($value)) {
+	} elsif ($header =~ /^Protocol REF$/i && length($value)) {
 	  $current_node->{protocols} ||= ordered_hashref();
 	  $current_node->{protocols}{$value} ||= ordered_hashref();
 	  $current_protocol = $current_node->{protocols}{$value};
