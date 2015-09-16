@@ -34,6 +34,10 @@ See http://isatab.sourceforge.net/specifications.html
     my $isa = $parser->parse;
     print "Title: ".$isa->{investigation_title}."\n";
 
+Investigation and Study-level comments are now allowed. See
+https://groups.google.com/forum/#!topic/isaforum/x5Yzj395cHQ
+for examples.
+
 =head1 LIMITATIONS
 
 Issues not fully adressed:
@@ -221,12 +225,18 @@ sub parse {
     } elsif ($current_section =~ /s$/) {
       # we're in a multi-column section, so add to $table
       push @{$table}, $row;
-    } elsif ($current_section eq 'study') {
-      # single column study section
-      $isa->{studies}[$study_index]{lcu($row->[0])} = defined $row->[1] ? $row->[1] : '';
     } else {
-      # we're in a single-column investigation section, so just add the data directly
-      $isa->{lcu($row->[0])} = defined $row->[1] ? $row->[1] : '';
+      my $isa_ref = $isa;
+      if ($current_section eq 'study') {
+	# single column study section
+	$isa_ref = $isa->{studies}[$study_index];
+      }
+      if ($row->[0] =~ /^Comment\s*\[(.+)\]\s*$/) {
+	$isa_ref->{comments} ||= ordered_hashref();
+	$isa_ref->{comments}{$1} = defined $row->[1] ? $row->[1] : '';
+      } else {
+	$isa_ref->{lcu($row->[0])} = defined $row->[1] ? $row->[1] : '';
+      }
     }
   }
 
@@ -519,6 +529,9 @@ sub process_table {
 	      $isa_ptr->{$section_name}[$i]{$plural_key}[$j]{plural_subkey($row->[0], $plural_key)} = defined $values[$j] ? $values[$j] : '';
 	    }
 	  }
+	} elsif ($row->[0] =~ /^Comment\s*\[(.+)\]\s*$/) {
+	  $isa_ptr->{$section_name}[$i]{comments} ||= ordered_hashref();
+	  $isa_ptr->{$section_name}[$i]{comments}{$1} = defined $row->[$i+1] ? $row->[$i+1] : '';
 	} else {
 	  $isa_ptr->{$section_name}[$i]{lcu($row->[0])} = defined $row->[$i+1] ? $row->[$i+1] : '';
 	}
