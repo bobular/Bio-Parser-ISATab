@@ -379,6 +379,8 @@ sub parse_study_or_assay {
 
       my $current_protocol; # pointer to the latest protocol which might need qualifying
 
+      my $context = $study_file; # e.g. "s_samples -> foo1.sample -> Characteristics [foo]" that helps debugging overwrite problems
+
       for (my $i=0; $i<$n; $i++) {
 	my $header = $headers->[$i];
 	my $value = defined $row->[$i] ? $row->[$i] : '';
@@ -399,6 +401,7 @@ sub parse_study_or_assay {
 	  }
 	  undef $current_attribute;
 	  undef $current_protocol;
+	  $context = "$study_file -> $header -> $value";
 	} elsif ($non_reusable_node_types{$header} ||
 		 (defined $custom_column_types->{$header} &&
 		  $custom_column_types->{$header} eq 'non-reusable node')) {
@@ -413,6 +416,7 @@ sub parse_study_or_assay {
 	  }
 	  undef $current_attribute;
 	  undef $current_protocol;
+	  $context = "$study_file -> $header -> $value";
 	} elsif ($header =~ /^(Characteristics|Factor Value)\s*\[(.+)\]\s*$/) {
 	  my $key = lcu($1);
 	  my $type = $2;
@@ -421,18 +425,18 @@ sub parse_study_or_assay {
 	  # factor values need special treatment (don't attach them to files and other non-reusable nodes)
 	  my $node_to_annotate = $key eq 'factor_values' ? $last_biological_material : $current_node;
 	  $node_to_annotate->{$key} ||= ordered_hashref();
-	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value, 'Characteristics') if (length($value));
+	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value, $context = "$context -> $header") if (length($value));
 	  $current_attribute = $node_to_annotate->{$key}{$type};
 	} elsif ($header =~ /^Comment\s*\[(.+)\]\s*$/) {
 	  my $type = $1;
 	  $current_node->{comments} ||= ordered_hashref();
-	  check_and_set(\$current_node->{comments}{$type}, $value, 'Comment') if (length($value));
+	  check_and_set(\$current_node->{comments}{$type}, $value, "$context -> $header") if (length($value));
 	} elsif ($header eq 'Material Type' || $header eq 'Label' ||
 		 (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'attribute')) {
-	  check_and_set(\$current_node->{lcu($header)}{value}, $value, 'Material Type/Label') if (length($value));
+	  check_and_set(\$current_node->{lcu($header)}{value}, $value, $context = "$context -> $header") if (length($value));
 	  $current_attribute = $current_node->{lcu($header)};
 	} elsif ($header eq 'Unit' && $current_attribute) {
-	  check_and_set(\$current_attribute->{unit}{value}, $value, 'Unit') if (length($value));
+	  check_and_set(\$current_attribute->{unit}{value}, $value, $context = "$context -> $header") if (length($value));
 	  $current_attribute = $current_attribute->{unit};
 	} elsif ($header =~ /^Protocol REF$/i && length($value)) {
 	  $current_node->{protocols} ||= ordered_hashref();
@@ -440,16 +444,16 @@ sub parse_study_or_assay {
 	  $current_protocol = $current_node->{protocols}{$value};
 	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
 	  $current_protocol->{parameter_values} ||= ordered_hashref();
-	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value, 'Parameter Value') if (length($value));
+	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value, $context = "$context -> $header") if (length($value));
 	  $current_attribute = $current_protocol->{parameter_values}{$2};
 	} elsif ($header =~ /^(Performer|Date)$/ && $current_protocol) {
-	  check_and_set(\$current_protocol->{lc($1)}, $value, 'Performer/Date') if (length($value));
+	  check_and_set(\$current_protocol->{lc($1)}, $value, "$context -> $header") if (length($value));
 	} elsif ($header =~ /^Term (Source REF|Accession Number)$/i && $current_attribute && length($value)) {
-	  check_and_set(\$current_attribute->{lcu($header)}, $value, 'Term Source REF/Accession Number');
+	  check_and_set(\$current_attribute->{lcu($header)}, $value, "$context -> $header");
 	} elsif ($header eq 'Description' && length($value)) {
 	  # simply stored as $node->{description} = "text ...";
 	  # NOT $node->{description}{value} = ...
-	  check_and_set(\$current_node->{lcu($header)}, $value, 'Description');
+	  check_and_set(\$current_node->{lcu($header)}, $value, "$context -> $header");
 	} elsif (length($value)) {
 	  # this warning is really just for debugging - we don't want to let any non-empty cells through the net
 	  # carp "probable valueless annotation of $headers->[$i-1] qualified by $header => $value (column $i of $study_file)";
