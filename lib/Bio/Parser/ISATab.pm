@@ -552,6 +552,41 @@ sub process_table {
 
 }
 
+=head2 write
+
+Writes the data in the hashref argument to ISA-Tab files in the directory already known to the parser object.
+
+ my $reader = Bio::Parser::ISATab->new(directory=>$input_directory);
+ my $isatab = $reader->parse;
+ my $writer = Bio::Parser::ISATab->new(directory=>$output_directory);
+ $writer->write($isatab);
+
+=cut
+
+sub write {
+  my ($self, $isatab) = @_;
+
+  my $directory = $self->directory;
+  mkdir $directory unless (-d $directory);
+
+  my $investigation_handle;
+  open($investigation_handle, ">", "$directory/i_investigation.txt" ) || die "problem opening $directory/i_investigation.txt for writing\n";
+
+  my $ontologies = $isatab->{ontologies};
+  my @ontology_source_reference_rows;
+  foreach my $heading ('Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description') {
+    push @ontology_source_reference_rows, [ $heading, map { $_->{lcu($heading)} } @{$ontologies} ];
+  }
+
+  print $investigation_handle "ONTOLOGY SOURCE REFERENCE\n";
+  $self->print_table($investigation_handle, \@ontology_source_reference_rows);
+  print $investigation_handle "\n";
+
+
+
+  close($investigation_handle);
+}
+
 =head2 lcu
 
 return lower case and s/\s/_/g string
@@ -652,6 +687,24 @@ sub ordered_hashref {
   my $ref = {};
   tie %{$ref}, 'Tie::Hash::Indexed';
   return $ref;
+}
+
+
+=head2 print_table
+
+args: filehandle, arrayref
+
+prints tab-delimited data to the file.
+
+If you need extra newlines, print them explicitly.
+
+=cut
+
+sub print_table {
+  my ($self, $filehandle, $arrayref) = @_;
+  foreach my $row (@{$arrayref}) {
+    $self->tsv_parser->print($filehandle, $row);
+  }
 }
 
 =head1 AUTHOR
