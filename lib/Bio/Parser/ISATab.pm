@@ -569,22 +569,142 @@ sub write {
   my $directory = $self->directory;
   mkdir $directory unless (-d $directory);
 
+  # INVESTIGATION sheet #
   my $investigation_handle;
   open($investigation_handle, ">", "$directory/i_investigation.txt" ) || die "problem opening $directory/i_investigation.txt for writing\n";
 
-  my $ontologies = $isatab->{ontologies};
-  my @ontology_source_reference_rows;
-  foreach my $heading ('Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description') {
-    push @ontology_source_reference_rows, [ $heading, map { $_->{lcu($heading)} } @{$ontologies} ];
+
+  $self->write_investigation_section($investigation_handle,
+				     $isatab->{ontologies},
+				     'ONTOLOGY SOURCE REFERENCE',
+				     'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description');
+
+
+  $self->write_investigation_section($investigation_handle,
+				     [ $isatab ],
+				     'INVESTIGATION',
+				     'Investigation Identifier', 'Investigation Title', 'Investigation Description',
+				     'Investigation Submission Date', 'Investigation Public Release Date');
+
+  $self->write_investigation_section($investigation_handle,
+				     $isatab->{investigation_publications},
+				     'INVESTIGATION PUBLICATIONS',
+				     'Investigation PubMed ID',
+				     'Investigation Publication DOI',
+				     'Investigation Publication Author list',
+				     'Investigation Publication Title',
+				     'Investigation Publication Status',
+				     'Investigation Publication Status Term Accession Number',
+				     'Investigation Publication Status Term Source REF'
+				     );
+
+  $self->write_investigation_section($investigation_handle,
+				     $isatab->{investigation_contacts},
+				     'INVESTIGATION CONTACTS',
+				     'Investigation Person Last Name',
+				     'Investigation Person First Name',
+				     'Investigation Person Mid Initials',
+				     'Investigation Person Email', 'Investigation Person Phone',
+				     'Investigation Person Fax', 'Investigation Person Address',
+				     'Investigation Person Affiliation', 'Investigation Person Roles',
+				     'Investigation Person Roles Term Accession Number',
+				     'Investigation Person Roles Term Source REF');
+
+  foreach my $study (@{$isatab->{studies}}) {
+      $self->write_investigation_section($investigation_handle,
+					 [ $study ],
+					 'STUDY',
+					 'Study Identifier', 'Study Title', 'Study Description',
+					 'Study Submission Date', 'Study Public Release Date', 'Study File Name');
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_designs},
+					 'STUDY DESIGN DESCRIPTORS',
+					 'Study Design Type',
+					 'Study Design Type Term Accession Number',
+					 'Study Design Type Term Source REF');
+
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_publications},
+					 'STUDY PUBLICATIONS',
+					 'Study PubMed ID', 'Study Publication DOI',
+					 'Study Publication Author list',
+					 'Study Publication Title', 'Study Publication Status',
+					 'Study Publication Status Term Accession Number',
+					 'Study Publication Status Term Source REF');
+
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_factors},
+					 'STUDY FACTORS',
+					 'Study Factor Name', 'Study Factor Type',
+					 'Study Factor Type Term Accession Number',
+					 'Study Factor Type Term Source REF');
+
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_assays},
+					 'STUDY ASSAYS',
+					 'Study Assay Measurement Type',
+					 'Study Assay Measurement Type Term Accession Number',
+					 'Study Assay Measurement Type Term Source REF',
+					 'Study Assay Technology Type',
+					 'Study Assay Technology Type Term Accession Number',
+					 'Study Assay Technology Type Term Source REF',
+					 'Study Assay Technology Platform', 'Study Assay File Name');
+
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_protocols},
+					 'STUDY PROTOCOLS',
+					 'Study Protocol Name',	 'Study Protocol Type',
+					 'Study Protocol Type Term Accession Number',
+					 'Study Protocol Type Term Source Ref',
+					 'Study Protocol Description', 'Study Protocol URI', 'Study Protocol Version',
+					 'Study Protocol Parameters Name',
+					 'Study Protocol Parameters Name Term Accession Number',
+					 'Study Protocol Parameters Name Term Source Ref',
+					 'Study Protocol Components Name',
+					 'Study Protocol Components Type',
+					 'Study Protocol Components Type Term Accession Number',
+					 'Study Protocol Components Type Term Source Ref');
+
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_contacts},
+					 'STUDY CONTACTS',
+					 'Study Person Last Name', 'Study Person First Name',
+					 'Study Person Mid Initials',
+					 'Study Person Email', 'Investigation Person Phone',
+					 'Study Person Fax', 'Investigation Person Address',
+					 'Study Person Affiliation', 'Investigation Person Roles',
+					 'Study Person Roles Term Accession Number',
+					 'Study Person Roles Term Source REF');
+  }
+  close($investigation_handle);
+
+  # STUDY and ASSAY sheets #
+  foreach my $study (@{$isatab->{studies}}) {
+    
+
+
   }
 
-  print $investigation_handle "ONTOLOGY SOURCE REFERENCE\n";
-  $self->print_table($investigation_handle, \@ontology_source_reference_rows);
-  print $investigation_handle "\n";
+}
 
+=head2 write_investigation_section
 
+private helper to write section of i_investigation.txt
 
-  close($investigation_handle);
+args: arrayref, TITLE, Headings, ....
+
+=cut
+
+sub write_investigation_section {
+  my ($self, $filehandle, $arrayref, $title, @headings) = @_;
+  my @rows;
+  foreach my $heading (@headings) {
+    # expand any arrays as semi-colon delimited
+    push @rows, [ $heading, map { ref($_) eq 'ARRAY' ? join(';',@$_) : $_ } map { $_->{lcu($heading)} } @{$arrayref} ];
+  }
+  print $filehandle "$title\n";
+  $self->print_table($filehandle, \@rows);
+  print $filehandle "\n";
 }
 
 =head2 lcu

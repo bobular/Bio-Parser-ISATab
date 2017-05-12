@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 1;
 
 #
 # will show output of diff if tested in verbose mode only
@@ -18,23 +18,26 @@ my $isatab = $reader->parse;
 my $writer = Bio::Parser::ISATab->new(directory=>$output_directory);
 $writer->write($isatab);
 
+my $isatab2 = $writer->parse;
 
-foreach my $filename (text_files_in_directory($input_directory)) {
+is_deeply($isatab2, $isatab, "reloaded ISA-Tab data from dumped ISA-Tab is identical to original");
 
 
-  my $output_file = "$output_directory/$filename";
-  # special case for investigation file because its name is not specified in the ISA-Tab files themselves.
-  $output_file = "$output_directory/i_investigation.txt" if ($filename =~ /^i_/);
-
-  ok(-f $output_file, "input $filename has existent output: $output_file");
-
-  my @differences = compare_tsv("$input_directory/$filename", $output_file);
-  is(scalar @differences, 0, "content of $filename is identical");
-  if (-f $output_file && @differences) {
-    note(@differences);
-  }
-}
-
+# foreach my $filename (text_files_in_directory($input_directory)) {
+# 
+#   my $output_file = "$output_directory/$filename";
+#   # special case for investigation file because its name is not specified in the ISA-Tab files themselves.
+#   $output_file = "$output_directory/i_investigation.txt" if ($filename =~ /^i_/);
+# 
+#   ok(-f $output_file, "input $filename has existent output: $output_file");
+# 
+#   my @differences = compare_tsv("$input_directory/$filename", $output_file);
+#   is(scalar @differences, 0, "content of $filename is identical");
+#   if (-f $output_file && @differences) {
+#     note(@differences);
+#   }
+# }
+# 
 
 
 
