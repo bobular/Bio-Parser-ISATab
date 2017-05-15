@@ -39,6 +39,7 @@ Study Description	"Although fatty liver disease is caused by a number of toxicol
 
 Keywords: metabolomics, metabolic profiling, pattern recognition, nonalcoholic steatohepatisis"
 Study File Name	"s_BII-S-6.txt"
+Comment [Funding source]	"Government"
 STUDY DESIGN DESCRIPTORS
 Study Design Type	"time series design"
 Study Design Type Term Accession Number	"500020"
@@ -51,6 +52,7 @@ Study Publication Title	"The influence of pharmacogenetics on fatty liver diseas
 Study Publication Status	""
 Study Publication Status Term Accession Number	""
 Study Publication Status Term Source REF	""
+Comment [URL]	"http://dx.doi.org/10.1021/pr0601640"
 STUDY FACTORS
 Study Factor Name	"compound"	"time"	"strain"
 Study Factor Type	"compound"	"time"	"strain"

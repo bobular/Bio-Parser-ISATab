@@ -678,7 +678,7 @@ sub write {
   }
   close($investigation_handle);
 
-  # STUDY and ASSAY sheets #
+  # SAMPLE and ASSAY sheets #
   foreach my $study (@{$isatab->{studies}}) {
     
 
@@ -702,6 +702,15 @@ sub write_investigation_section {
     # expand any arrays as semi-colon delimited
     push @rows, [ $heading, map { ref($_) eq 'ARRAY' ? join(';',@$_) : $_ } map { $_->{lcu($heading)} } @{$arrayref} ];
   }
+
+  # figure out which comment topics (e.g. "URL" in "Comment [URL]") have been used, preserving order
+  my $comment_topics = ordered_hashref();
+  map { $comment_topics->{$_}=1 } map { exists $_->{comments} ? keys %{$_->{comments}} : () } @{$arrayref};
+  foreach my $topic (keys %{$comment_topics}) {
+    push @rows, [ "Comment [$topic]", map { $_->{comments}{$topic} } @{$arrayref} ];
+  }
+
+
   print $filehandle "$title\n";
   $self->print_table($filehandle, \@rows);
   print $filehandle "\n";
