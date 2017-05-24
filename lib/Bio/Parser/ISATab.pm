@@ -7,7 +7,7 @@ use Carp;
 use Text::CSV_XS;
 use Tie::Hash::Indexed;
 use Data::Dumper;
-use Clone qw(clone);
+use Data::Table;
 
 require 5.10.1;
 
@@ -683,11 +683,8 @@ sub write {
   foreach my $study (@{$isatab->{studies}}) {
 
     # SAMPLES #
-    my $s_samples_filename = $study->{study_file_name};
-    my $s_samples_handle;
-    open($s_samples_handle, ">", "$directory/$s_samples_filename" ) || die "problem opening $directory/$s_samples_filename for writing\n";
-    $self->write_study_or_assay($s_samples_handle, $study);
-    close($s_samples_handle);
+    $self->write_study_or_assay($study->{study_file_name}, $study, ['Source Name', 'Sample Name']);
+
 
 
     # ASSAYS #
@@ -730,50 +727,40 @@ sub write_investigation_section {
 
 private helper to write section of s_samples.txt and a_*.txt files
 
-args: arrayref, study_or_assay_ref
+args: filename, study_or_assay_ref, material_headings_arrayref
+
+where material headings might be [ 'Sample Name', 'Assay Name', ... ]
 
 =cut
 
 sub write_study_or_assay {
-  my ($self, $filehandle, $ref) = @_;
+  my ($self, $filename, $ref, $material_headings) = @_;
 
-  my ($r, $h, $rows, $headings) = ([], [], [], []);
-  rowify_study_or_assay($ref, $r, $h, $rows, $headings, ['Source Name', 'Sample Name']);
+  my $filehandle;
+  my $directory = $self->directory;
+  open($filehandle, ">", "$directory/$filename" ) || die "problem opening $directory/$filename for writing\n";
 
-  my $aligned_headings = align_headings($headings);
+  my ($r, $h, $table) = ([], [], Data::Table->new());
+  rowify_study_or_assay($ref, $r, $h, $table, $material_headings);
 
-  my @aligned_rows;
-  push @aligned_rows, $aligned_headings;
+  my $table_data = $table->data;
+  my @verbose_headers = $table->header;
+  # process the table headers from "Sample Name :: FOO :: Protocol REF" to "Protocol REF"
+  my @final_headers = map { my @parts = split / :: /, $_; pop @parts; } @verbose_headers;
+  unshift @$table_data, \@final_headers;
 
-  die "number of rows and headings is not equal in write_study_or_assay!\n" unless (@$rows == @$headings);
-
-  for (my $i=0; $i<@$rows; $i++) {
-    # now step through the current $headings->[$i] and the $aligned_headings and output empty
-    # strings where there is no header in the former
-    my @aligned_row;
-    my $k=0;
-    for (my $j=0; $j<@$aligned_headings; $j++) {
-      if (!defined $headings->[$i][$k] ||
-	  $headings->[$i][$k] ne $aligned_headings->[$j]) {
-	push @aligned_row, '';
-      } else {
-	push @aligned_row, $rows->[$i][$k++];
-      }
-    }
-    push @aligned_rows, \@aligned_row;
-  }
-
-  $self->print_table($filehandle, \@aligned_rows);
+  $self->print_table($filehandle, $table_data);
+  close($filehandle);
 }
 
 
-# recursive routine to descend study or assay 
+# recursive routine to descend study or assay
 #
 # $r is the current row arrayref
 # $h is the current row's headings arrayref
 #
 sub rowify_study_or_assay {
-  my ($ref, $r, $h, $finished_rows, $finished_headings, $material_headings) = @_;
+  my ($ref, $r, $h, $table, $material_headings) = @_;
 
   my $terminated = 1;
   foreach my $material_heading (@$material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
@@ -794,150 +781,122 @@ sub rowify_study_or_assay {
 	# Characteristics
 	foreach my $characteristic (keys %{$material->{characteristics}}) {
 	  my $cdata = $material->{characteristics}{$characteristic};
-	  push @h, "Characteristics [$characteristic]";
+	  my $characteristic_heading = "$material_heading :: Characteristics [$characteristic]";
+	  push @h, $characteristic_heading;
 	  push @r, $cdata->{value};
 	  if (exists $cdata->{term_source_ref} && exists $cdata->{term_accession_number}) {
-	    push @h, "Term Source REF", "Term Accession Number";
+	    push @h, "$characteristic_heading :: Term Source REF", "$characteristic_heading :: Term Accession Number";
 	    push @r, $cdata->{term_source_ref}, $cdata->{term_accession_number};
 	  } elsif (exists $cdata->{unit}) {
-	    push @h, "Unit";
+	    my $unit_heading = "$characteristic_heading :: Unit";
+	    push @h, $unit_heading;
 	    push @r, $cdata->{unit}{value};
 	    if (exists $cdata->{unit}{term_source_ref} && exists $cdata->{unit}{term_accession_number}) {
-	      push @h, "Term Source REF", "Term Accession Number";
+	      push @h, "$unit_heading Term Source REF", "$unit_heading :: Term Accession Number";
 	      push @r, $cdata->{unit}{term_source_ref}, $cdata->{unit}{term_accession_number};
 	    }
 	  }
 	}
 	foreach my $protocol (keys %{$material->{protocols}}) {
 	  my $pdata = $material->{protocols}{$protocol};
-	  push @h, "Protocol REF";
+	  # each different protocol will get its own Protocol REF column
+	  # this is because pairing them up with Parameter Values is tricky otherwise
+	  # maybe review this later if we don't have any data which would
+	  # fail if we remove the $protocol in the line below.
+	  my $protocol_heading = "$material_heading :: $protocol :: Protocol REF";
+	  push @h, $protocol_heading;
 	  push @r, $protocol;
 	  if (exists $pdata->{performer}) {
-	    push @h, "Performer";
+	    push @h, "$protocol_heading :: Performer";
 	    push @r, $pdata->{performer};
 	  }
 	  if (exists $pdata->{date}) {
-	    push @h, "Date";
+	    push @h, "$protocol_heading :: Date";
 	    push @r, $pdata->{date};
 	  }
 	  foreach my $parameter (keys %{$pdata->{parameter_values}}) {
 	    my $pvdata = $pdata->{parameter_values}{$parameter};
-	    push @h, "Parameter Value [$parameter]";
+	    my $parameter_value_heading = "$protocol_heading :: Parameter Value [$parameter]";
+	    push @h, $parameter_value_heading;
 	    push @r, $pvdata->{value};
 	    if (exists $pvdata->{term_source_ref} && exists $pvdata->{term_accession_number}) {
-	      push @h, "Term Source REF", "Term Accession Number";
+	      push @h, "$parameter_value_heading :: Term Source REF", "$parameter_value_heading :: Term Accession Number";
 	      push @r, $pvdata->{term_source_ref}, $pvdata->{term_accession_number};
 	    } elsif (exists $pvdata->{unit}) {
-	      push @h, "Unit";
+	      my $unit_heading = "$parameter_value_heading :: Unit";
+	      push @h, $unit_heading;
 	      push @r, $pvdata->{unit}{value};
 	      if (exists $pvdata->{unit}{term_source_ref} && exists $pvdata->{unit}{term_accession_number}) {
-		push @h, "Term Source REF", "Term Accession Number";
+		push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
 		push @r, $pvdata->{unit}{term_source_ref}, $pvdata->{unit}{term_accession_number};
 	      }
 	    }
 	  }
 	}
 
-	rowify_study_or_assay($material, \@r, \@h, $finished_rows, $finished_headings, $material_headings);
+	foreach my $factor_value (keys %{$material->{factor_values}}) {
+	  my $fvdata = $material->{factor_values}{$factor_value};
+	  my $factor_value_heading = "$material_heading :: Factor Value [$factor_value]";
+	  push @h, $factor_value_heading;
+	  push @r, $fvdata->{value};
+
+	  if (exists $fvdata->{term_source_ref} && exists $fvdata->{term_accession_number}) {
+	    push @h, "$factor_value_heading :: Term Source REF", "$factor_value_heading :: Term Accession Number";
+	    push @r, $fvdata->{term_source_ref}, $fvdata->{term_accession_number};
+	  } elsif (exists $fvdata->{unit}) {
+	    my $unit_heading = "$factor_value_heading :: Unit";
+	    push @h, $unit_heading;
+	    push @r, $fvdata->{unit}{value};
+	    if (exists $fvdata->{unit}{term_source_ref} && exists $fvdata->{unit}{term_accession_number}) {
+	      push @h, "$unit_heading Term Source REF", "$unit_heading :: Term Accession Number";
+	      push @r, $fvdata->{unit}{term_source_ref}, $fvdata->{unit}{term_accession_number};
+	    }
+	  }
+	}
+
+	rowify_study_or_assay($material, \@r, \@h, $table, $material_headings);
 	$terminated = 0;
       }
 
     }
   }
-  if ($terminated) {
-    # push copies of the rows onto the finished arrays of arrays
-    push @$finished_rows, [ @$r ];
-    push @$finished_headings, [ @$h ];
-  }
-}
+  if ($terminated) {  # add the current row into the final table
+    my $numPrevRows = $table->nofRow();
 
+#   print "adding new row after $numPrevRows previous............\n";
 
-sub align_headings {
-  my ($headings) = @_;
-
-  my %seen;
-  my $unique_headings = [];
-  foreach my $heading (@$headings) {
-    push @$unique_headings, $heading unless ($seen{join(':',@$heading)}++);
-  }
-
-  arrayprint($unique_headings);
-
-  my $solutions = [];
-  _align_headings($unique_headings, 0, $solutions);
-
-  my $n = scalar @$solutions;
-  warn "evaluated $n solutions\n";
-
-  my ($best_length, $best_solution);
-  foreach my $solution (@$solutions) {
-    my $solution_length = scalar @{$solution};
-    if (!defined $best_length || $solution_length < $best_length) {
-      $best_solution = $solution;
-      $best_length = $solution_length;
-    }
-  }
-
-  print "solution:\n";
-  print "@$best_solution\n";
-
-  return $best_solution;
-}
-
-
-sub _align_headings {
-  my ($headings, $j, $solutions) = @_;
-
-  # go down column $j and count the number of different values
-  my %values;
-  my $empties = 0;
-  for (my $i=0; $i<@$headings; $i++) {
-    my $value = $headings->[$i][$j];
-    if (defined $value) {
-      $values{$value} = 1;
-    } else {
-      $empties++;
-    }
-  }
-
-  if (keys %values == 0) {
-    # we've reached the end
-    # assume all rows in $headings are now identical!
-    # (they were during testing!)
-    push @$solutions, $headings->[0];
-
-  } elsif ($empties || keys %values > 1) {
-    foreach my $value (keys %values) {
-      # insert this value into the column where it
-      # is not there already
-      my $newheadings = clone($headings);
-
-      # some columns always come next to each other so we can
-      # handle them together and reduce the search space massively
-      my @replacement = ($value);
-      if ($value eq 'Term Source REF') {
-	push @replacement, 'Term Accession Nmber';
-      }
-
-      for (my $i=0; $i<@$newheadings; $i++) {
-	if (!defined $newheadings->[$i][$j] ||
-	    $newheadings->[$i][$j] ne $value) {
-	  splice @{$newheadings->[$i]}, $j, 0, @replacement;
+    my $columnIndex = 0;
+    # step through this row's headings
+    # and see if we need to add any new columns to the output table
+    for (my $i=0; $i<@$h; $i++) {
+      my $heading = $h->[$i];
+      # (we probably can't rely on Data::Table's addRow addNewCol option)
+      # put new columns into the table just to the right of the last-matched column
+      unless ($table->hasCol($heading)) {
+	my $newColIndex = undef; # by default add at end of table
+	if ($columnIndex+1 < $table->header) {
+	  $newColIndex = $columnIndex+1;
 	}
+	$table->addCol([ ('') x $numPrevRows ], $heading, $newColIndex);
+#	print "+++++added '$heading'\n";
       }
-      _align_headings($newheadings, $j+@replacement, $solutions);
+      $columnIndex = $table->colIndex($heading);
     }
-  } else {
-    _align_headings($headings, $j+1, $solutions);
+    my @row = map { '' } $table->header;
+
+    # step through the headings and data now and put the data in the correct column of @row
+    for (my $i=0; $i<@$h; $i++) {
+      my $heading = $h->[$i];
+      my $data = $r->[$i];
+      my $columnIndex = $table->colIndex($heading);
+      $row[$columnIndex] = $data;
+    }
+
+#    print "header/row\n".join("\t",$table->header)."\n".join("\t",@row)."\n\n";
+    $table->addRow(\@row);
   }
 }
 
-sub arrayprint {
-  my ($arrayref) = @_;
-  foreach my $row (@$arrayref) {
-    print join(' ', @$row)."\n";
-  }
-}
 
 =head2 lcu
 
