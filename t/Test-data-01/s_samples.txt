@@ -1,0 +1,14 @@
+"Source Name"	"Sample Name"	Description	"Comment [comment]"	"Material Type"	"Term Source Ref"	"Term Accession Number"	"Comment [age]"	"Characteristics [sex (EFO:0000695)]"	"Term Source Ref"	"Term Accession Number"	"Characteristics [developmental stage (EFO:0000399)]"	"Term Source Ref"	"Term Accession Number"	"Characteristics [age (EFO:0000246)]"	"Term Source Ref"	"Term Accession Number"	Unit	"Term Source Ref"	"Term Accession Number"
+"El Masalamia"	"El Masalamia"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	"record of missing knowledge"	OBI	0000852
+"El Hoosh"	"El Hoosh"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	"record of missing knowledge"	OBI	0000852
+"El Khoor"	"El Khoor"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	"record of missing knowledge"	OBI	0000852
+"El Managil"	"El Managil"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	"record of missing knowledge"	OBI	0000852
+Mobi	Mobi			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	"record of missing knowledge"	OBI	0000852
+Rofaa	Rofaa			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+Tabat	Tabat			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+"Wad Medani"	"Wad Medani"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+"Wad Rawa"	"Wad Rawa"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+"El Booster"	"El Booster"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+"El Suki"	"El Suki"			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+Sennar	Sennar			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033
+Singa	Singa			pool	EFO	0000663		female	PATO	0000383	adult	IDOMAL	0000655	3			day	UO	0000033

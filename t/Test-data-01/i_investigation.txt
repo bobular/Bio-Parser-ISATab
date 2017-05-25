@@ -1,0 +1,85 @@
+"ONTOLOGY SOURCE REFERENCE"
+"Term Source Name"	MO	EFO	OBI	UO	GAZ	NCBITaxon	PATO	MIRO	efo	IDOMAL	SO	VBcv
+"Term Source File"	http://mged.sourceforge.net/ontologies/MGEDontology.php
+"Term Source Version"	1.3.0.1	http://data.bioontology.org/ontologies/EFO	47893	49121	46911	47845	47893	49589	49584	47619	49414	v0.50
+"Term Source Description"	"The Microarray Ontology"	"Experimental Factor Ontology"	"Ontology for Biomedical Investigations"	"Units of measurement"	Gazetteer	"NCBI organismal classification"	"Ontology for Biomedical Investigations"	"Mosquito insecticide resistance"	"Experimental Factor Ontology"	"Malaria Ontology"	"Sequence types and features"	"VectorBase controlled vocabulary"
+
+STUDY
+"Study Identifier"	2007-Abdalla-IR
+"Study Title"	"Insecticide susceptibility and vector status of natural populations of Anopheles arabiensis from Sudan"
+"Study Submission Date"	2007-07-10
+"Study Public Release Date"	2007-12-03
+"Study Description"	"Species composition, blood meal source, sporozoite infection rate, insecticide resistance and the kdr mutations were investigated in the Anopheles gambiae complex from 13 sentinel sites in central Sudan. "
+"Study File Name"	s_samples.txt
+
+"STUDY DESIGN DESCRIPTORS"
+"Study Design Type"	"observational design"	"strain or line design"	"compound treatment design"
+"Study Design Type Term Accession Number"	0000629	0001754	0001755
+"Study Design Type Term Source Ref"	EFO	EFO	EFO
+
+"STUDY PUBLICATIONS"
+"Study PubMed ID"	18054056
+"Study Publication DOI"	10.1016/j.trstmh.2007.10.008
+"Study Publication Author list"	"H. Abdallaa, T.S. Matamboa, L.L. Koekemoer, A.P. Mnzava,
+R.H. Hunt, M. Coetzee"
+"Study Publication Title"	"Insecticide susceptibility and vector status of natural populations of Anopheles arabiensis from Sudan"
+"Study Publication Status"	published
+"Study Publication Status Term Accession Number"	0001796
+"Study Publication Status Term Source Ref"	EFO
+
+
+"# VectorBase is currently not planning to use factors and factor values in popbio ISA-Tab submissions."
+"# Instead we ask you to provide our curators with a description of the pertinent Characteristics, Parameter Values, Genotypes and/or Phenotypes to be used in the display of the results."
+"STUDY FACTORS"
+"Study Factor Name"
+"Study Factor Type"
+"Study Factor Type Term Accession Number"
+"Study Factor Type Term Source Ref"
+
+"STUDY ASSAYS"
+"Study Assay Measurement Type"	"field collection"	"species identification assay"	"phenotype assay"
+"Study Assay Measurement Type Term Accession Number"
+"Study Assay Measurement Type Term Source Ref"
+"Study Assay Technology Type"
+"Study Assay Technology Type Term Accession Number"
+"Study Assay Technology Type Term Source Ref"
+"Study Assay Technology Platform"
+"Study Assay File Name"	a_collection.txt	a_species.txt	a_IR_WHO.txt
+
+"STUDY PROTOCOLS"
+"Study Protocol Name"	COLL_LARV	COLL_HOUSE	SPECIES	SPECIES_PCR	ELISA_BLOOD	IR_WHO
+"Study Protocol Type"	"Collection of larvae"	"house resting - daytime catch"	"Morphological examination"	"PCR-based species identification"	"enzyme-linked immunosorbent assay"	"WHO paper kit DT"
+"Study Protocol Type Term Accession Number"	30000022	30000007	30000039	30000040	0000222	20000041
+"Study Protocol Type Term Source Ref"	MIRO	MIRO	MIRO	MIRO	IDOMAL	MIRO
+"Study Protocol Description"	"Wild anopheline larvae were collected and transported to the insectary at the Blue Nile Research and Training Institute (BNRTI) in Wad Medani, where they were reared."	"Indoor resting collections were carried out at Tabat, El Hoosh, El Khoor, El Managil and El Booster, all of which are subjected to indoor residual spraying (IRS) with deltamethrin 2.5% wettable powder."	"The resulting adults were identified as A. gambiae complex according to the morphological keys (Gillies and Coetzee, 1987)."	"A subsample of mosquitoes used for insecticide exposures (both dead and surviving) and those collected resting indoors were identified to species level using the species-specific PCR assay. "	"The ELISA methods for blood meal identification (Beier et al., 1988) were used."	"One- to three-day-old female mosquitoes were tested with different insecticides for their susceptibility, using the WHO standard protocol (WHO, 1998) under optimum conditions (temperature 26–29 °C and 70–80% relative humidity). The results were recorded as either dead or alive mosquitoes 24 h post-exposure. Insecticides tested were 0.75% permethrin, 4% DDT, 5% malathion and 0.1% bendiocarb. The test kits and the impregnated papers were obtained from the WHO Eastern Mediterranean Regional Office (EMRO) in Cairo, Egypt. Each test had five replicates on papers impregnated with the above-mentioned insecticides and a control tube with oil-treated paper, i.e. without insecticide. A total of 20–25 mosquitoes was used per tube. Knockdown was recorded after 1 h and final mortality was recorded 24 h post-exposure, during which time a 10% sugar solution was made available to survivors. Dead and surviving mosquitoes were stored separately in clearly labeled 1.5 ml tubes containing silica gel."
+"Study Protocol URI"				http://www.ajtmh.org/content/49/4/520.short	http://jme.oxfordjournals.org/content/25/1/9.abstract?ijkey=a77ae197262d528c6b2c53963663ec97a0df842b&keytype2=tf_ipsecsha
+"Study Protocol Version"			"Gillies and Coetzee, 1987.Gillies, M.T., Coetzee, M., 1987. A supplement to the Anophelinae of Africa south of the Sahara. Publ. S. Afr. Inst. Med. Res., Johannesburg, No. 55."
+"Study Protocol Parameters Name"						"group1.insecticidal substance;group1.concentration;duration of exposure"
+"Study Protocol Parameters Name Term Accession Number"						10000239;0000033;0000433
+"Study Protocol Parameters Name Term Source Ref"						MIRO;PATO;EFO
+"Study Protocol Components Name"
+"Study Protocol Components Type"
+"Study Protocol Components Type Term Accession Number"
+"Study Protocol Components Type Term Source Ref"
+
+
+"# study contacts must contain a ""submitter"" or ""reporting party role"" person"
+"# please add the sample collector details in the a_collection sheet"
+"# the Email field is mandatory (emails will not be displayed on the site)"
+"# use ""sub-investigator role"" as a default role"
+"STUDY CONTACTS"
+"Study Person Last Name"	Abdalla	Coetzee
+"Study Person First Name"	H	Maureen
+"Study Person Mid Initials"
+"Study Person Email"	h.abdalla@placeholder.name	maureenc@nicd.ac.za
+"Study Person Phone"
+"Study Person Fax"
+"Study Person Address"
+"Study Person Affiliation"	"Vector Control Reference Unit, National Institute for Communicable Diseases, NHLS, Private Bag X4, Sandringham 2131, Johannesburg, South Africa.
+School of Animal, Plant and Environmental Sciences, University of the Witwatersrand, Johannesburg, South Africa.
+Blue Nile Research and Training Institute, P.O. Box 101, Wad Medani, Sudan."	"Vector Control Reference Unit, National Institute for Communicable Diseases, NHLS, Private Bag X4, Sandringham 2131, Johannesburg, South Africa. Division of Virology and Communicable Diseases Surveillance, School of Pathology of the National Health Laboratory Service and the University of the Witwatersrand, Johannesburg, South Africa."
+"Study Person Roles"	"sub-investigator role"	"sub-investigator role"
+"Study Person Roles Term Accession Number"	0000224	0000224
+"Study Person Roles Term Source Ref"	OBI	OBI
+
+"# ISA-Tab allows multiple studies (a new STUDY section following this line) but for VectorBase submissions we only accept single studies at the moment."

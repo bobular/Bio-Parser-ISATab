@@ -9,7 +9,7 @@ use Data::Dumper;
 use Bio::Parser::ISATab;
 use Text::CSV_XS;
 
-my $input_directory = './t/BII-S-6';
+my $input_directory = './t/Test-data-01';
 my $output_directory = './t/temp-output';
 
 my $reader = Bio::Parser::ISATab->new(directory=>$input_directory);

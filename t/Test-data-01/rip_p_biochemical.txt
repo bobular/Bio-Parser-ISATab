@@ -1,0 +1,21 @@
+"Assay Name"	"Phenotype Name"	Observable	"Term Source Ref"	"Term Accession Number"	Attribute	"Term Source Ref"	"Term Accession Number"	Value	"Term Source Ref"	"Term Accession Number"	Unit	"Term Source Ref"	"Term Accession Number"	st
+"Corrales-El Playón.bc.BC_MFO"		"absorbance intensity"						"number "
+"Corrales-El Playón.bc.BC_NSE"
+"Corrales-El Playón.bc.BC_MACE"				"we need the raw number from the authors, cannot put in the data otherwise"
+"Corrales-El Playón.bc.BC_GST"
+Encharcazón.bc.BC_MFO
+Encharcazón.bc.BC_NSE
+Encharcazón.bc.BC_MACE
+Encharcazón.bc.BC_GST
+Socuavó.bc.BC_MFO
+Socuavó.bc.BC_NSE
+Socuavó.bc.BC_MACE
+Socuavó.bc.BC_GST
+"Santa Rosa.bc.BC_MFO"
+"Santa Rosa.bc.BC_NSE"
+"Santa Rosa.bc.BC_MACE"
+"Santa Rosa.bc.BC_GST"
+"Caño Victoria.bc.BC_MFO"
+"Caño Victoria.bc.BC_NSE"
+"Caño Victoria.bc.BC_MACE"
+"Caño Victoria.bc.BC_GST"

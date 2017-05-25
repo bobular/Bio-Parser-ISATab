@@ -1,0 +1,14 @@
+"Sample Name"	"Assay Name"	Description	"Protocol REF"	"Protocol REF"	Performer	Date	"Characteristics [species assay result (VBcv:0000961)]"	"Term Source Ref"	"Term Accession Number"
+"El Masalamia"	"El Masalamia species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"El Hoosh"	"El Hoosh species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"El Khoor"	"El Khoor species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"El Managil"	"El Managil species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+Mobi	"Mobi species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+Rofaa	"Rofaa species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+Tabat	"Tabat species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"Wad Medani"	"Wad Medani species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"Wad Rawa"	"Wad Rawa species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"El Booster"	"El Booster species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+"El Suki"	"El Suki species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+Sennar	"Sennar species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224
+Singa	"Singa species"	"morphological identification and PCR-RFLP"	SPECIES	SPECIES_PCR			"Anopheles arabiensis"	MIRO	40002224

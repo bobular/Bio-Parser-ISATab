@@ -1,0 +1,11 @@
+"Column Name"	Ontology	Branch	Version
+"Characteristics [Collection site (VBcv:0000831)]"	GAZ			GAZ
+"Characteristics [sex (EFO:0000695)]"	OBI			"Ontology for Biomedical Investigations "
+"Characteristics [species assay result (VBcv:0000961)]"	MIRO			"Mosquito insecticide resistance"
+"Material Type"	OBI,EFO			"Ontology for Biomedical Investigations "
+"Study Design Type"	OBI,EFO			"Experimental Factor Ontology "
+"Study Person Roles"	OBI			"Ontology for Biomedical Investigations "
+Unit	UO			"Units of measurement "
+"Study Publication Status"	EFO			"Experimental Factor Ontology "
+"Characteristics [developmental stage (EFO:0000399)]"	IDOMAL			"Malaria Ontology "
+"Parameter Value [insecticidal substance]"	MIRO			"Mosquito insecticide resistance "

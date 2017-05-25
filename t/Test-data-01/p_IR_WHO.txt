@@ -1,0 +1,53 @@
+"Assay Name"	"Phenotype Name"	Observable	"Term Source Ref"	"Term Accession Number"	Attribute	"Term Source Ref"	"Term Accession Number"	"Comment [note]"	Value	"Term Source Ref"	"Term Accession Number"	Unit	"Term Source Ref"	"Term Accession Number"
+"El Masalamia.DT.IR_WHO.permethrin"	"Mortality percentage:72.7, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	72.7			percent	UO	0000187
+"El Masalamia.DT.IR_WHO.DDT"	"Mortality percentage:59.2, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	59.2			percent	UO	0000187
+"El Masalamia.DT.IR_WHO.malathion"	"Mortality percentage:89.2, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	89.2			percent	UO	0000187
+"El Masalamia.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"El Hoosh.DT.IR_WHO.permethrin"	"Mortality percentage:54.6, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	54.6			percent	UO	0000187
+"El Hoosh.DT.IR_WHO.DDT"	"Mortality percentage:55.4, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	55.4			percent	UO	0000187
+"El Hoosh.DT.IR_WHO.malathion"	"Mortality percentage:78.1, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	78.1			percent	UO	0000187
+"El Hoosh.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"El Khoor.DT.IR_WHO.permethrin"	"Mortality percentage:78.1, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	78.1			percent	UO	0000187
+"El Khoor.DT.IR_WHO.DDT"	"Mortality percentage:90.5, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	90.5			percent	UO	0000187
+"El Khoor.DT.IR_WHO.malathion"	"Mortality percentage:97.3, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	97.3			percent	UO	0000187
+"El Khoor.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"El Managil.DT.IR_WHO.permethrin"	"Mortality percentage:89.9, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	89.9			percent	UO	0000187
+"El Managil.DT.IR_WHO.DDT"	"Mortality percentage:95.1, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	95.1			percent	UO	0000187
+"El Managil.DT.IR_WHO.malathion"	"Mortality percentage:90.8, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	90.8			percent	UO	0000187
+"El Managil.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+Mobi.DT.IR_WHO.permethrin	"Mortality percentage:72.3, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	72.3			percent	UO	0000187
+Mobi.DT.IR_WHO.DDT	"Mortality percentage:83.6, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	83.6			percent	UO	0000187
+Mobi.DT.IR_WHO.malathion	"Mortality percentage:86.3, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	86.3			percent	UO	0000187
+Mobi.DT.IR_WHO.bendiocarb	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+Rofaa.DT.IR_WHO.permethrin	"Mortality percentage:85.7, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	85.7			percent	UO	0000187
+Rofaa.DT.IR_WHO.DDT	"Mortality percentage:83, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	83			percent	UO	0000187
+Rofaa.DT.IR_WHO.malathion	"Mortality percentage:97, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	97			percent	UO	0000187
+Rofaa.DT.IR_WHO.bendiocarb	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+Tabat.DT.IR_WHO.permethrin	"Mortality percentage:76.3, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	76.3			percent	UO	0000187
+Tabat.DT.IR_WHO.DDT	"Mortality percentage:84.1, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	84.1			percent	UO	0000187
+Tabat.DT.IR_WHO.malathion	"Mortality percentage:76.8, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	76.8			percent	UO	0000187
+Tabat.DT.IR_WHO.bendiocarb	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"Wad Medani.DT.IR_WHO.permethrin"	"Mortality percentage:66.4, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	66.4			percent	UO	0000187
+"Wad Medani.DT.IR_WHO.DDT"	"Mortality percentage:66.4, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	66.4			percent	UO	0000187
+"Wad Medani.DT.IR_WHO.malathion"	"Mortality percentage:86.7, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	86.7			percent	UO	0000187
+"Wad Medani.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"Wad Rawa.DT.IR_WHO.permethrin"	"Mortality percentage:58.6, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	58.6			percent	UO	0000187
+"Wad Rawa.DT.IR_WHO.DDT"	"Mortality percentage:60.8, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	60.8			percent	UO	0000187
+"Wad Rawa.DT.IR_WHO.malathion"	"Mortality percentage:89.7, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	89.7			percent	UO	0000187
+"Wad Rawa.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"El Booster.DT.IR_WHO.permethrin"	"Mortality percentage:94.2, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	94.2			percent	UO	0000187
+"El Booster.DT.IR_WHO.DDT"	"Mortality percentage:99.1, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	99.1			percent	UO	0000187
+"El Booster.DT.IR_WHO.malathion"	"Mortality percentage:99, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	99			percent	UO	0000187
+"El Booster.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+"El Suki.DT.IR_WHO.permethrin"	"Mortality percentage:84, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	84			percent	UO	0000187
+"El Suki.DT.IR_WHO.DDT"	"Mortality percentage:95.2, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	95.2			percent	UO	0000187
+"El Suki.DT.IR_WHO.malathion"	"Mortality percentage:80.2, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	80.2			percent	UO	0000187
+"El Suki.DT.IR_WHO.bendiocarb"	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+Sennar.DT.IR_WHO.permethrin	"Mortality percentage:92.2, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	92.2			percent	UO	0000187
+Sennar.DT.IR_WHO.DDT	"Mortality percentage:93.5, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	93.5			percent	UO	0000187
+Sennar.DT.IR_WHO.malathion	"Mortality percentage:100, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+Sennar.DT.IR_WHO.bendiocarb	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187
+Singa.DT.IR_WHO.permethrin	"Mortality percentage:72, 0.75% permethrin"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	72			percent	UO	0000187
+Singa.DT.IR_WHO.DDT	"Mortality percentage:64.8, 4% DDT"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	64.8			percent	UO	0000187
+Singa.DT.IR_WHO.malathion	"Mortality percentage:91.7, 5% malathion"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	91.7			percent	UO	0000187
+Singa.DT.IR_WHO.bendiocarb	"Mortality percentage:100, 0.1% bendiocarb"	"insecticide resistance"	MIRO	00000021	"mortality rate"	VBcv	0000703	IP	100			percent	UO	0000187

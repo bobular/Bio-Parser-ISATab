@@ -1,0 +1,53 @@
+"Sample Name"	"Assay Name"	"Protocol REF"	Performer	Date	"Comment [note]"	"Parameter Value [group1.insecticidal substance]"	"Term Source Ref"	"Term Accession Number"	"Parameter Value [group1.concentration]"	Unit	"Term Source Ref"	"Term Accession Number"	"Parameter Value [duration of exposure]"	Unit	"Term Source Ref"	"Term Accession Number"	"Characteristics [sample size (VBcv:0000983)]"	"Raw Data File"
+"El Masalamia"	"El Masalamia.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	121	p_IR_WHO.txt
+"El Masalamia"	"El Masalamia.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	120	p_IR_WHO.txt
+"El Masalamia"	"El Masalamia.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	111	p_IR_WHO.txt
+"El Masalamia"	"El Masalamia.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	121	p_IR_WHO.txt
+"El Hoosh"	"El Hoosh.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	121	p_IR_WHO.txt
+"El Hoosh"	"El Hoosh.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	112	p_IR_WHO.txt
+"El Hoosh"	"El Hoosh.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	114	p_IR_WHO.txt
+"El Hoosh"	"El Hoosh.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	136	p_IR_WHO.txt
+"El Khoor"	"El Khoor.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	114	p_IR_WHO.txt
+"El Khoor"	"El Khoor.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	116	p_IR_WHO.txt
+"El Khoor"	"El Khoor.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	110	p_IR_WHO.txt
+"El Khoor"	"El Khoor.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	114	p_IR_WHO.txt
+"El Managil"	"El Managil.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	109	p_IR_WHO.txt
+"El Managil"	"El Managil.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	82	p_IR_WHO.txt
+"El Managil"	"El Managil.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	98	p_IR_WHO.txt
+"El Managil"	"El Managil.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	123	p_IR_WHO.txt
+Mobi	Mobi.DT.IR_WHO.permethrin	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	119	p_IR_WHO.txt
+Mobi	Mobi.DT.IR_WHO.DDT	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	146	p_IR_WHO.txt
+Mobi	Mobi.DT.IR_WHO.malathion	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	80	p_IR_WHO.txt
+Mobi	Mobi.DT.IR_WHO.bendiocarb	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	127	p_IR_WHO.txt
+Rofaa	Rofaa.DT.IR_WHO.permethrin	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	105	p_IR_WHO.txt
+Rofaa	Rofaa.DT.IR_WHO.DDT	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	88	p_IR_WHO.txt
+Rofaa	Rofaa.DT.IR_WHO.malathion	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	100	p_IR_WHO.txt
+Rofaa	Rofaa.DT.IR_WHO.bendiocarb	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	126	p_IR_WHO.txt
+Tabat	Tabat.DT.IR_WHO.permethrin	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	121	p_IR_WHO.txt
+Tabat	Tabat.DT.IR_WHO.DDT	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	82	p_IR_WHO.txt
+Tabat	Tabat.DT.IR_WHO.malathion	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	82	p_IR_WHO.txt
+Tabat	Tabat.DT.IR_WHO.bendiocarb	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	125	p_IR_WHO.txt
+"Wad Medani"	"Wad Medani.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	113	p_IR_WHO.txt
+"Wad Medani"	"Wad Medani.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	113	p_IR_WHO.txt
+"Wad Medani"	"Wad Medani.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	99	p_IR_WHO.txt
+"Wad Medani"	"Wad Medani.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	100	p_IR_WHO.txt
+"Wad Rawa"	"Wad Rawa.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	116	p_IR_WHO.txt
+"Wad Rawa"	"Wad Rawa.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	120	p_IR_WHO.txt
+"Wad Rawa"	"Wad Rawa.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	126	p_IR_WHO.txt
+"Wad Rawa"	"Wad Rawa.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	129	p_IR_WHO.txt
+"El Booster"	"El Booster.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	103	p_IR_WHO.txt
+"El Booster"	"El Booster.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	111	p_IR_WHO.txt
+"El Booster"	"El Booster.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	100	p_IR_WHO.txt
+"El Booster"	"El Booster.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	100	p_IR_WHO.txt
+"El Suki"	"El Suki.DT.IR_WHO.permethrin"	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	102	p_IR_WHO.txt
+"El Suki"	"El Suki.DT.IR_WHO.DDT"	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	103	p_IR_WHO.txt
+"El Suki"	"El Suki.DT.IR_WHO.malathion"	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	116	p_IR_WHO.txt
+"El Suki"	"El Suki.DT.IR_WHO.bendiocarb"	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	126	p_IR_WHO.txt
+Sennar	Sennar.DT.IR_WHO.permethrin	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	102	p_IR_WHO.txt
+Sennar	Sennar.DT.IR_WHO.DDT	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	107	p_IR_WHO.txt
+Sennar	Sennar.DT.IR_WHO.malathion	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	97	p_IR_WHO.txt
+Sennar	Sennar.DT.IR_WHO.bendiocarb	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	107	p_IR_WHO.txt
+Singa	Singa.DT.IR_WHO.permethrin	IR_WHO				permethrin	MIRO	10000144	0.75	percent	UO	0000187	1	hour	UO	0000032	111	p_IR_WHO.txt
+Singa	Singa.DT.IR_WHO.DDT	IR_WHO				DDT	MIRO	10000157	4	percent	UO	0000187	1	hour	UO	0000032	108	p_IR_WHO.txt
+Singa	Singa.DT.IR_WHO.malathion	IR_WHO				malathion	MIRO	10000065	5	percent	UO	0000187	1	hour	UO	0000032	108	p_IR_WHO.txt
+Singa	Singa.DT.IR_WHO.bendiocarb	IR_WHO				bendiocarb	MIRO	10000006	0.1	percent	UO	0000187	1	hour	UO	0000032	109	p_IR_WHO.txt
