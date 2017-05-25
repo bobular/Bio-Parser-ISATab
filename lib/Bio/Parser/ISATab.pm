@@ -233,11 +233,13 @@ sub parse {
 	# single column study section
 	$isa_ref = $isa->{studies}[$study_index];
       }
-      if ($row->[0] =~ /^Comment\s*\[(.+)\]\s*$/) {
-	$isa_ref->{comments} ||= ordered_hashref();
-	$isa_ref->{comments}{$1} = defined $row->[1] ? $row->[1] : '';
-      } else {
-	$isa_ref->{lcu($row->[0])} = defined $row->[1] ? $row->[1] : '';
+      if (nonempty($row->[1])) {
+	if ($row->[0] =~ /^Comment\s*\[(.+)\]\s*$/) {
+	  $isa_ref->{comments} ||= ordered_hashref();
+	  $isa_ref->{comments}{$1} = $row->[1];
+	} else {
+	  $isa_ref->{lcu($row->[0])} = $row->[1];
+	}
       }
     }
   }
@@ -307,7 +309,9 @@ and two extra attribute-like columns (like "Material Type" in standard ISA-Tab)
 # these are columns which can trigger a pooling event (convergence in the DAG)
 #
 
-my %reusable_node_types = ('Source Name' => 'sources',
+my %reusable_node_types;
+tie %reusable_node_types, 'Tie::Hash::Indexed';
+%reusable_node_types = ('Source Name' => 'sources',
 			   'Sample Name' => 'samples',
 			   'Extract Name' => 'extracts',
 			   'Labeled Extract Name' => 'labeled_extracts',
@@ -330,7 +334,9 @@ my %reusable_node_types = ('Source Name' => 'sources',
 # note, values (used as keys in the $isa data structure) have been pluralised except for the array design
 #
 
-my %non_reusable_node_types = ('Data Transformation Name' => 'data_transformations',
+my %non_reusable_node_types;
+tie %non_reusable_node_types, 'Tie::Hash::Indexed';
+%non_reusable_node_types = ('Data Transformation Name' => 'data_transformations',
 			       'Raw Data File' => 'raw_data_files',
 			       'Image File' => 'image_files',
 			       'Array Design File' => 'array_design_file',
@@ -430,10 +436,10 @@ sub parse_study_or_assay {
 	  $node_to_annotate->{$key} ||= ordered_hashref();
 	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value, $context = "$context -> $header") if (length($value));
 	  $current_attribute = $node_to_annotate->{$key}{$type};
-	} elsif ($header =~ /^Comment\s*\[(.+)\]\s*$/) {
+	} elsif ($header =~ /^Comment\s*\[(.+)\]\s*$/ && length($value)) {
 	  my $type = $1;
 	  $current_node->{comments} ||= ordered_hashref();
-	  check_and_set(\$current_node->{comments}{$type}, $value, "$context -> $header") if (length($value));
+	  check_and_set(\$current_node->{comments}{$type}, $value, "$context -> $header");
 	} elsif ($header eq 'Material Type' || $header eq 'Label' ||
 		 (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'attribute')) {
 	  check_and_set(\$current_node->{lcu($header)}{value}, $value, $context = "$context -> $header") if (length($value));
@@ -524,23 +530,24 @@ sub process_table {
     for (my $i=0; $i<$num_cols; $i++) {
       my %num_values_seen; # plural_key => num_values => 1;  for semicolon delimited only
       foreach my $row (@$rows) {
-
-	if (defined (my $plural_key = $semicolon_delimited{$row->[0]})) {
-	  # this row may need semicolon splitting
-	  my @values = split /\s*;\s*/, ($row->[$i+1] || ''), -1;
-	  $num_values_seen{$plural_key}{scalar @values} = 1 if (@values > 0);
-	  if ($plural_key =~ /initials$/) {
-	    $isa_ptr->{$section_name}[$i]{$plural_key} = \@values;
-	  } else {
-	    for (my $j=0; $j<@values; $j++) {
-	      $isa_ptr->{$section_name}[$i]{$plural_key}[$j]{plural_subkey($row->[0], $plural_key)} = defined $values[$j] ? $values[$j] : '';
+	if (nonempty($row->[$i+1])) {
+	  if (defined (my $plural_key = $semicolon_delimited{$row->[0]})) {
+	    # this row may need semicolon splitting
+	    my @values = split /\s*;\s*/, $row->[$i+1], -1;
+	    $num_values_seen{$plural_key}{scalar @values} = 1 if (@values > 0);
+	    if ($plural_key =~ /initials$/) {
+	      $isa_ptr->{$section_name}[$i]{$plural_key} = \@values;
+	    } else {
+	      for (my $j=0; $j<@values; $j++) {
+		$isa_ptr->{$section_name}[$i]{$plural_key}[$j]{plural_subkey($row->[0], $plural_key)} = defined $values[$j] ? $values[$j] : '';
+	      }
 	    }
+	  } elsif ($row->[0] =~ /^Comment\s*\[(.+)\]\s*$/) {
+	    $isa_ptr->{$section_name}[$i]{comments} ||= ordered_hashref();
+	    $isa_ptr->{$section_name}[$i]{comments}{$1} = $row->[$i+1];
+	  } else {
+	    $isa_ptr->{$section_name}[$i]{lcu($row->[0])} = $row->[$i+1];
 	  }
-	} elsif ($row->[0] =~ /^Comment\s*\[(.+)\]\s*$/) {
-	  $isa_ptr->{$section_name}[$i]{comments} ||= ordered_hashref();
-	  $isa_ptr->{$section_name}[$i]{comments}{$1} = defined $row->[$i+1] ? $row->[$i+1] : '';
-	} else {
-	  $isa_ptr->{$section_name}[$i]{lcu($row->[0])} = defined $row->[$i+1] ? $row->[$i+1] : '';
 	}
       }
 
@@ -673,9 +680,9 @@ sub write {
 					 'STUDY CONTACTS',
 					 'Study Person Last Name', 'Study Person First Name',
 					 'Study Person Mid Initials',
-					 'Study Person Email', 'Investigation Person Phone',
-					 'Study Person Fax', 'Investigation Person Address',
-					 'Study Person Affiliation', 'Investigation Person Roles',
+					 'Study Person Email', 'Study Person Phone',
+					 'Study Person Fax', 'Study Person Address',
+					 'Study Person Affiliation', 'Study Person Roles',
 					 'Study Person Roles Term Accession Number',
 					 'Study Person Roles Term Source REF');
   }
@@ -689,7 +696,7 @@ sub write {
     # ASSAYS #
     # to do...
     foreach my $assay (@{$study->{study_assays}}) {
-      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay, ['Sample Name', 'Assay Name']);
+      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay, [keys %reusable_node_types, keys %non_reusable_node_types]);
     }
   }
 }
@@ -706,8 +713,25 @@ sub write_investigation_section {
   my ($self, $filehandle, $arrayref, $title, @headings) = @_;
   my @rows;
   foreach my $heading (@headings) {
-    # expand any arrays as semi-colon delimited
-    push @rows, [ $heading, map { ref($_) eq 'ARRAY' ? join(';',@$_) : $_ } map { $_->{lcu($heading)} } @{$arrayref} ];
+    if ($semicolon_delimited{$heading}) {
+      my $subkey = $semicolon_delimited{$heading};
+      my @newrow = ($heading);
+      foreach my $main_item (@$arrayref) {
+	my @values;
+	if ($subkey =~ /initials$/) {
+	  @values = @{$main_item->{$subkey} || []};
+	} else {
+	  foreach my $sub_item (@{$main_item->{$subkey}}) {
+	    push @values, $sub_item->{plural_subkey($heading, $subkey)} || '';
+	  }
+	}
+	push @newrow, join(';', @values);
+      }
+      push @rows, \@newrow;
+    } else {
+      # expand any arrays as semi-colon delimited
+      push @rows, [ $heading, map { ref($_) eq 'ARRAY' ? join(';',@$_) : $_ } map { $_->{lcu($heading)} } @{$arrayref} ];
+    }
   }
 
   # figure out which comment topics (e.g. "URL" in "Comment [URL]") have been used, preserving order
@@ -725,7 +749,7 @@ sub write_investigation_section {
 
 =head2 write_study_or_assay
 
-private helper to write section of s_samples.txt and a_*.txt files
+writes out s_samples.txt and a_*.txt files
 
 args: filename, study_or_assay_ref, material_headings_arrayref
 
@@ -764,11 +788,11 @@ sub rowify_study_or_assay {
 
   my $terminated = 1;
   foreach my $material_heading (@$material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
-    my $materials_key = $reusable_node_types{$material_heading}; # e.g. 'sources', 'samples', 'assays'
+    my $materials_key = $reusable_node_types{$material_heading} || $non_reusable_node_types{$material_heading}; # e.g. 'sources', 'samples', 'assays'
     if ($ref->{$materials_key}) {
       foreach my $material_name (href_keys($ref->{$materials_key})) {
 	my $material = $ref->{$materials_key}{$material_name};
-
+print "going into $materials_key $material_name\n";
 	# for each material
 	my @r = @$r; # make a copy
 	my @h = @$h; # of the row so far
@@ -877,7 +901,7 @@ sub rowify_study_or_assay {
 	    push @h, $unit_heading;
 	    push @r, $fvdata->{unit}{value};
 	    if (exists $fvdata->{unit}{term_source_ref} && exists $fvdata->{unit}{term_accession_number}) {
-	      push @h, "$unit_heading Term Source REF", "$unit_heading :: Term Accession Number";
+	      push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
 	      push @r, $fvdata->{unit}{term_source_ref}, $fvdata->{unit}{term_accession_number};
 	    }
 	  }
@@ -891,7 +915,8 @@ sub rowify_study_or_assay {
   }
   if ($terminated) {  # add the current row into the final table
     my $numPrevRows = $table->nofRow();
-
+print "current headers: ".join(';', $table->header)."\n";
+print "new headers    : ".join(';', @$h)."\n";
 #   print "adding new row after $numPrevRows previous............\n";
 
     my $columnIndex = 0;
@@ -947,6 +972,11 @@ sub lcu {
 =head2 plural_subkey
 
 return the key for the final level in the hash for semicolon-delimited values (contact roles, protocol params)
+
+e.g.
+plural_subkey('Study Protocol Parameters Name Term Accession Number', 'study_protocol_parameters')
+returns
+'study_protocol_parameter_name_term_accession_number'
 
 =cut
 

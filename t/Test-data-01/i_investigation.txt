@@ -70,7 +70,7 @@ R.H. Hunt, M. Coetzee"
 "STUDY CONTACTS"
 "Study Person Last Name"	Abdalla	Coetzee
 "Study Person First Name"	H	Maureen
-"Study Person Mid Initials"
+"Study Person Mid Initials"	X;Y;Z
 "Study Person Email"	h.abdalla@placeholder.name	maureenc@nicd.ac.za
 "Study Person Phone"
 "Study Person Fax"
