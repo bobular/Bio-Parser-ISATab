@@ -3,11 +3,12 @@ package Bio::Parser::ISATab;
 use Mouse;
 use warnings;
 use strict;
-use Carp;
+use Carp qw/croak carp cluck/;
 use Text::CSV_XS;
 use Tie::Hash::Indexed;
 use Data::Dumper;
 use Data::Table;
+use utf8::all;
 
 require 5.10.1;
 
@@ -254,7 +255,7 @@ sub parse {
   create_lookup($isa, 'ontologies', 'ontology_lookup', 'term_source_name');
   foreach my $study (@{$isa->{studies}}) {
     create_lookup($study, 'study_protocols', 'study_protocol_lookup', 'study_protocol_name');
-    foreach my $protocol_name (keys %{$study->{study_protocol_lookup}}) {
+    foreach my $protocol_name (href_keys($study->{study_protocol_lookup})) {
       my $protocol = $study->{study_protocol_lookup}{$protocol_name};
       create_lookup($protocol, 'study_protocol_parameters', 'study_protocol_parameter_lookup', 'study_protocol_parameter_name');
       create_lookup($protocol, 'study_protocol_components', 'study_protocol_component_lookup', 'study_protocol_component_name');
@@ -685,13 +686,12 @@ sub write {
     # SAMPLES #
     $self->write_study_or_assay($study->{study_file_name}, $study, ['Source Name', 'Sample Name']);
 
-
-
     # ASSAYS #
     # to do...
-
+    foreach my $assay (@{$study->{study_assays}}) {
+      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay, ['Sample Name', 'Assay Name']);
+    }
   }
-
 }
 
 =head2 write_investigation_section
@@ -712,7 +712,7 @@ sub write_investigation_section {
 
   # figure out which comment topics (e.g. "URL" in "Comment [URL]") have been used, preserving order
   my $comment_topics = ordered_hashref();
-  map { $comment_topics->{$_}=1 } map { exists $_->{comments} ? keys %{$_->{comments}} : () } @{$arrayref};
+  map { $comment_topics->{$_}=1 } map { href_keys($_->{comments}) } @{$arrayref};
   foreach my $topic (keys %{$comment_topics}) {
     push @rows, [ "Comment [$topic]", map { $_->{comments}{$topic} } @{$arrayref} ];
   }
@@ -766,7 +766,7 @@ sub rowify_study_or_assay {
   foreach my $material_heading (@$material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
     my $materials_key = $reusable_node_types{$material_heading}; # e.g. 'sources', 'samples', 'assays'
     if ($ref->{$materials_key}) {
-      foreach my $material_name (keys %{$ref->{$materials_key}}) {
+      foreach my $material_name (href_keys($ref->{$materials_key})) {
 	my $material = $ref->{$materials_key}{$material_name};
 
 	# for each material
@@ -778,8 +778,31 @@ sub rowify_study_or_assay {
 	push @h, $material_heading;
 	push @r, $material_name;
 
+	if (nonempty($material->{description})) {
+	  push @h, "$material_heading :: Description";
+	  push @r, $material->{description};
+	}
+
+	if ($material->{material_type}) {
+	  my $material_type_heading = "$material_heading :: Material Type";
+	  my $mtdata = $material->{material_type};
+	  push @h, $material_type_heading;
+	  push @r, $mtdata->{value} // '';
+	  if (exists $mtdata->{term_source_ref} && exists $mtdata->{term_accession_number}) {
+	    push @h, "$material_type_heading :: Term Source REF", "$material_type_heading :: Term Accession Number";
+	    push @r, $mtdata->{term_source_ref}, $mtdata->{term_accession_number};
+	  }
+	}
+
+	# Comments
+	foreach my $comment (href_keys($material->{comments})) {
+	  my $comment_heading = "$material_heading :: Comment [$comment]";
+	  push @h, $comment_heading;
+	  push @r, $material->{comments}{$comment};
+	}
+
 	# Characteristics
-	foreach my $characteristic (keys %{$material->{characteristics}}) {
+	foreach my $characteristic (href_keys($material->{characteristics})) {
 	  my $cdata = $material->{characteristics}{$characteristic};
 	  my $characteristic_heading = "$material_heading :: Characteristics [$characteristic]";
 	  push @h, $characteristic_heading;
@@ -792,12 +815,14 @@ sub rowify_study_or_assay {
 	    push @h, $unit_heading;
 	    push @r, $cdata->{unit}{value};
 	    if (exists $cdata->{unit}{term_source_ref} && exists $cdata->{unit}{term_accession_number}) {
-	      push @h, "$unit_heading Term Source REF", "$unit_heading :: Term Accession Number";
+	      push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
 	      push @r, $cdata->{unit}{term_source_ref}, $cdata->{unit}{term_accession_number};
 	    }
 	  }
 	}
-	foreach my $protocol (keys %{$material->{protocols}}) {
+
+	# Protocols
+	foreach my $protocol (href_keys($material->{protocols})) {
 	  my $pdata = $material->{protocols}{$protocol};
 	  # each different protocol will get its own Protocol REF column
 	  # this is because pairing them up with Parameter Values is tricky otherwise
@@ -814,7 +839,9 @@ sub rowify_study_or_assay {
 	    push @h, "$protocol_heading :: Date";
 	    push @r, $pdata->{date};
 	  }
-	  foreach my $parameter (keys %{$pdata->{parameter_values}}) {
+	  # Protocol Parameter Values
+	  if ($pdata->{parameter_values}) {
+	  foreach my $parameter (href_keys($pdata->{parameter_values})) {
 	    my $pvdata = $pdata->{parameter_values}{$parameter};
 	    my $parameter_value_heading = "$protocol_heading :: Parameter Value [$parameter]";
 	    push @h, $parameter_value_heading;
@@ -832,9 +859,11 @@ sub rowify_study_or_assay {
 	      }
 	    }
 	  }
+	  }
 	}
 
-	foreach my $factor_value (keys %{$material->{factor_values}}) {
+	# Factor Values
+	foreach my $factor_value (href_keys($material->{factor_values})) {
 	  my $fvdata = $material->{factor_values}{$factor_value};
 	  my $factor_value_heading = "$material_heading :: Factor Value [$factor_value]";
 	  push @h, $factor_value_heading;
@@ -881,6 +910,10 @@ sub rowify_study_or_assay {
 #	print "+++++added '$heading'\n";
       }
       $columnIndex = $table->colIndex($heading);
+
+      # move to the right if the next two columns are Term Source REF or Term Accession Number
+      $columnIndex++ while ($columnIndex+1<$table->header &&
+			    $table->colName($columnIndex+1) =~ /(?:Term Source (?:REF|Ref)|Term Accession Number)$/);
     }
     my @row = map { '' } $table->header;
 
@@ -1000,7 +1033,6 @@ sub ordered_hashref {
   return $ref;
 }
 
-
 =head2 print_table
 
 args: filehandle, arrayref
@@ -1017,6 +1049,33 @@ sub print_table {
     $self->tsv_parser->print($filehandle, $row);
   }
 }
+
+=head2 nonempty
+
+returns true if arg is defined and length(arg)>0
+
+=cut
+
+sub nonempty {
+  return defined $_[0] && length($_[0]);
+}
+
+=head2 href_keys
+
+unfortunately
+  foreach my $key (keys %{$hashref}) { ... }
+creates an empty hash for $hashref if it is undefined
+
+however
+  foreach my $key (href_keys $hashref) { ... }
+doesn't
+
+=cut
+
+sub href_keys {
+  return defined $_[0] && ref($_[0]) eq 'HASH' ? keys %{$_[0]} : ();
+}
+
 
 =head1 AUTHOR
 

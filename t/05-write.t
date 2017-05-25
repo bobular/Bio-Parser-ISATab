@@ -20,6 +20,9 @@ $writer->write($isatab);
 
 my $isatab2 = $writer->parse;
 
+
+print "HEY: ", $isatab->{studies}[0]{study_assays}[0]{samples}{'El Masalamia'}{assays}{'El Masalamia collection'}{protocols}{COLL_LARV}{parameter_values}."\n";
+
 is_deeply($isatab2, $isatab, "reloaded ISA-Tab data from dumped ISA-Tab is identical to original");
 
 
