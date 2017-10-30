@@ -1,4 +1,4 @@
-use Test::More tests => 1;
+use Test::More tests => 3;
 
 #
 # will show output of diff if tested in verbose mode only
@@ -11,8 +11,7 @@ use Text::CSV_XS;
 use File::Path qw/rmtree/;
 
 
-foreach my $input_directory ('./t/BII-S-6') {
-# foreach my $input_directory ('./t/Test-data-01', './t/BII-S-6', './t/Investigation-Study-Comments') {
+foreach my $input_directory ('./t/Test-data-01', './t/BII-S-6', './t/Investigation-Study-Comments') {
 
   diag "starting $input_directory\n";
   my $output_directory = './t/temp-output';
