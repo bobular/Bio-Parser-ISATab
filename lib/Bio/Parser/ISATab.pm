@@ -792,8 +792,10 @@ sub rowify_study_or_assay {
   my ($ref, $r, $h, $table, $material_headings) = @_;
 
   my $terminated = 1;
+  my %seen_materials_key; # don't process "Array Design Ref/REF" twice
   foreach my $material_heading (@$material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
     my $materials_key = $reusable_node_types{$material_heading} || $non_reusable_node_types{$material_heading}; # e.g. 'sources', 'samples', 'assays'
+    next if ($seen_materials_key{$materials_key}++);
     if ($ref->{$materials_key}) {
 print "going into $materials_key\n";
 print "headers : ".join(';', @$h)."\n";
