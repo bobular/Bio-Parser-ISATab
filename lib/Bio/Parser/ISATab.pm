@@ -357,6 +357,7 @@ tie %non_reusable_node_types, 'Tie::Hash::Indexed';
 			       'Free Induction Decay Data File' => 'free_induction_decay_data_files',
 			       'Acquisition Parameter Data File' => 'acquisition_parameter_data_files',
 			       'Metabolite Assignment File' => 'metabolite_assignment_files',
+			       'Label' => 'labels',
 );
 
 
@@ -426,7 +427,7 @@ sub parse_study_or_assay {
 	  undef $current_attribute;
 	  undef $current_protocol;
 	  $context = "$study_file -> $header -> $value";
-	} elsif ($header =~ /^(Characteristics|Factor Value)\s*\[(.+)\]\s*$/) {
+	} elsif ($header =~ /^(Characteristics|Factor Value)\s*\[(.+)\]\s*$/ && length($value)) {
 	  my $key = lcu($1);
 	  my $type = $2;
 	  $key =~ s/s?$/s/; # make plural lowercase underscored, e.g. factor_values
@@ -434,29 +435,29 @@ sub parse_study_or_assay {
 	  # factor values need special treatment (don't attach them to files and other non-reusable nodes)
 	  my $node_to_annotate = $key eq 'factor_values' ? $last_biological_material : $current_node;
 	  $node_to_annotate->{$key} ||= ordered_hashref();
-	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value, $context = "$context -> $header") if (length($value));
+	  check_and_set(\$node_to_annotate->{$key}{$type}{value}, $value, $context = "$context -> $header");
 	  $current_attribute = $node_to_annotate->{$key}{$type};
 	} elsif ($header =~ /^Comment\s*\[(.+)\]\s*$/ && length($value)) {
 	  my $type = $1;
 	  $current_node->{comments} ||= ordered_hashref();
 	  check_and_set(\$current_node->{comments}{$type}, $value, "$context -> $header");
 	} elsif ($header eq 'Material Type' || $header eq 'Label' ||
-		 (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'attribute')) {
-	  check_and_set(\$current_node->{lcu($header)}{value}, $value, $context = "$context -> $header") if (length($value));
+		 (defined $custom_column_types->{$header} && $custom_column_types->{$header} eq 'attribute') && length($value)) {
+	  check_and_set(\$current_node->{lcu($header)}{value}, $value, $context = "$context -> $header");
 	  $current_attribute = $current_node->{lcu($header)};
-	} elsif ($header eq 'Unit' && $current_attribute) {
-	  check_and_set(\$current_attribute->{unit}{value}, $value, $context = "$context -> $header") if (length($value));
+	} elsif ($header eq 'Unit' && $current_attribute && length($value)) {
+	  check_and_set(\$current_attribute->{unit}{value}, $value, $context = "$context -> $header");
 	  $current_attribute = $current_attribute->{unit};
 	} elsif ($header =~ /^Protocol REF$/i && length($value)) {
 	  $current_node->{protocols} ||= ordered_hashref();
 	  $current_node->{protocols}{$value} ||= ordered_hashref();
 	  $current_protocol = $current_node->{protocols}{$value};
-	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol) {
+	} elsif ($header =~ /^(Parameter Value)\s*\[(.+)\]\s*$/ && $current_protocol && length($value)) {
 	  $current_protocol->{parameter_values} ||= ordered_hashref();
-	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value, $context = "$context -> $header") if (length($value));
+	  check_and_set(\$current_protocol->{parameter_values}{$2}{value}, $value, $context = "$context -> $header");
 	  $current_attribute = $current_protocol->{parameter_values}{$2};
-	} elsif ($header =~ /^(Performer|Date)$/ && $current_protocol) {
-	  check_and_set(\$current_protocol->{lc($1)}, $value, "$context -> $header") if (length($value));
+	} elsif ($header =~ /^(Performer|Date)$/ && $current_protocol && length($value)) {
+	  check_and_set(\$current_protocol->{lc($1)}, $value, "$context -> $header");
 	} elsif ($header =~ /^Term (Source REF|Accession Number)$/i && $current_attribute && length($value)) {
 	  check_and_set(\$current_attribute->{lcu($header)}, $value, "$context -> $header");
 	} elsif ($header eq 'Description' && length($value)) {
@@ -695,7 +696,11 @@ sub write {
 
     # ASSAYS #
     # to do...
+
     foreach my $assay (@{$study->{study_assays}}) {
+
+      print "STARTING ASSAY $assay->{study_assay_file_name}\n";
+
       $self->write_study_or_assay($assay->{study_assay_file_name}, $assay, [keys %reusable_node_types, keys %non_reusable_node_types]);
     }
   }
@@ -725,7 +730,7 @@ sub write_investigation_section {
 	    push @values, $sub_item->{plural_subkey($heading, $subkey)} || '';
 	  }
 	}
-	push @newrow, join(';', @values);
+	push @newrow, length(join('', @values))>0 ? join(';', @values) : ''; # don't join only empty strings with semicolon
       }
       push @rows, \@newrow;
     } else {
@@ -790,9 +795,11 @@ sub rowify_study_or_assay {
   foreach my $material_heading (@$material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
     my $materials_key = $reusable_node_types{$material_heading} || $non_reusable_node_types{$material_heading}; # e.g. 'sources', 'samples', 'assays'
     if ($ref->{$materials_key}) {
+print "going into $materials_key\n";
+print "headers : ".join(';', @$h)."\n";
       foreach my $material_name (href_keys($ref->{$materials_key})) {
 	my $material = $ref->{$materials_key}{$material_name};
-print "going into $materials_key $material_name\n";
+print "processing $material_name ($materials_key)\n";
 	# for each material
 	my @r = @$r; # make a copy
 	my @h = @$h; # of the row so far
@@ -812,9 +819,9 @@ print "going into $materials_key $material_name\n";
 	  my $mtdata = $material->{material_type};
 	  push @h, $material_type_heading;
 	  push @r, $mtdata->{value} // '';
-	  if (exists $mtdata->{term_source_ref} && exists $mtdata->{term_accession_number}) {
+	  if (exists $mtdata->{term_source_ref} || exists $mtdata->{term_accession_number}) {
 	    push @h, "$material_type_heading :: Term Source REF", "$material_type_heading :: Term Accession Number";
-	    push @r, $mtdata->{term_source_ref}, $mtdata->{term_accession_number};
+	    push @r, $mtdata->{term_source_ref} // '', $mtdata->{term_accession_number} // '';
 	  }
 	}
 
@@ -831,16 +838,16 @@ print "going into $materials_key $material_name\n";
 	  my $characteristic_heading = "$material_heading :: Characteristics [$characteristic]";
 	  push @h, $characteristic_heading;
 	  push @r, $cdata->{value};
-	  if (exists $cdata->{term_source_ref} && exists $cdata->{term_accession_number}) {
+	  if (exists $cdata->{term_source_ref} || exists $cdata->{term_accession_number}) {
 	    push @h, "$characteristic_heading :: Term Source REF", "$characteristic_heading :: Term Accession Number";
-	    push @r, $cdata->{term_source_ref}, $cdata->{term_accession_number};
+	    push @r, $cdata->{term_source_ref} // '', $cdata->{term_accession_number} // '';
 	  } elsif (exists $cdata->{unit}) {
 	    my $unit_heading = "$characteristic_heading :: Unit";
 	    push @h, $unit_heading;
 	    push @r, $cdata->{unit}{value};
-	    if (exists $cdata->{unit}{term_source_ref} && exists $cdata->{unit}{term_accession_number}) {
+	    if (exists $cdata->{unit}{term_source_ref} || exists $cdata->{unit}{term_accession_number}) {
 	      push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
-	      push @r, $cdata->{unit}{term_source_ref}, $cdata->{unit}{term_accession_number};
+	      push @r, $cdata->{unit}{term_source_ref} // '', $cdata->{unit}{term_accession_number} // '';
 	    }
 	  }
 	}
@@ -870,16 +877,16 @@ print "going into $materials_key $material_name\n";
 	    my $parameter_value_heading = "$protocol_heading :: Parameter Value [$parameter]";
 	    push @h, $parameter_value_heading;
 	    push @r, $pvdata->{value};
-	    if (exists $pvdata->{term_source_ref} && exists $pvdata->{term_accession_number}) {
+	    if (exists $pvdata->{term_source_ref} || exists $pvdata->{term_accession_number}) {
 	      push @h, "$parameter_value_heading :: Term Source REF", "$parameter_value_heading :: Term Accession Number";
-	      push @r, $pvdata->{term_source_ref}, $pvdata->{term_accession_number};
+	      push @r, $pvdata->{term_source_ref} // '', $pvdata->{term_accession_number} // '';
 	    } elsif (exists $pvdata->{unit}) {
 	      my $unit_heading = "$parameter_value_heading :: Unit";
 	      push @h, $unit_heading;
 	      push @r, $pvdata->{unit}{value};
-	      if (exists $pvdata->{unit}{term_source_ref} && exists $pvdata->{unit}{term_accession_number}) {
+	      if (exists $pvdata->{unit}{term_source_ref} || exists $pvdata->{unit}{term_accession_number}) {
 		push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
-		push @r, $pvdata->{unit}{term_source_ref}, $pvdata->{unit}{term_accession_number};
+		push @r, $pvdata->{unit}{term_source_ref} // '', $pvdata->{unit}{term_accession_number} // '';
 	      }
 	    }
 	  }
@@ -893,16 +900,16 @@ print "going into $materials_key $material_name\n";
 	  push @h, $factor_value_heading;
 	  push @r, $fvdata->{value};
 
-	  if (exists $fvdata->{term_source_ref} && exists $fvdata->{term_accession_number}) {
+	  if (exists $fvdata->{term_source_ref} || exists $fvdata->{term_accession_number}) {
 	    push @h, "$factor_value_heading :: Term Source REF", "$factor_value_heading :: Term Accession Number";
-	    push @r, $fvdata->{term_source_ref}, $fvdata->{term_accession_number};
+	    push @r, $fvdata->{term_source_ref} // '', $fvdata->{term_accession_number} // '';
 	  } elsif (exists $fvdata->{unit}) {
 	    my $unit_heading = "$factor_value_heading :: Unit";
 	    push @h, $unit_heading;
 	    push @r, $fvdata->{unit}{value};
-	    if (exists $fvdata->{unit}{term_source_ref} && exists $fvdata->{unit}{term_accession_number}) {
+	    if (exists $fvdata->{unit}{term_source_ref} || exists $fvdata->{unit}{term_accession_number}) {
 	      push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
-	      push @r, $fvdata->{unit}{term_source_ref}, $fvdata->{unit}{term_accession_number};
+	      push @r, $fvdata->{unit}{term_source_ref} // '', $fvdata->{unit}{term_accession_number} // '';
 	    }
 	  }
 	}

@@ -1,4 +1,4 @@
-use Test::More tests => 3;
+use Test::More tests => 1;
 
 #
 # will show output of diff if tested in verbose mode only
