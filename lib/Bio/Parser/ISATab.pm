@@ -723,11 +723,13 @@ sub write_investigation_section {
       my @newrow = ($heading);
       foreach my $main_item (@$arrayref) {
 	my @values;
-	if ($subkey =~ /initials$/) {
-	  @values = @{$main_item->{$subkey} || []};
-	} else {
-	  foreach my $sub_item (@{$main_item->{$subkey}}) {
-	    push @values, $sub_item->{plural_subkey($heading, $subkey)} || '';
+	if (defined $main_item->{$subkey}) {
+	  if ($subkey =~ /initials$/) {
+	    @values = @{$main_item->{$subkey}};
+	  } else {
+	    foreach my $sub_item (@{$main_item->{$subkey}}) {
+	      push @values, $sub_item->{plural_subkey($heading, $subkey)} || '';
+	    }
 	  }
 	}
 	push @newrow, length(join('', @values))>0 ? join(';', @values) : ''; # don't join only empty strings with semicolon
