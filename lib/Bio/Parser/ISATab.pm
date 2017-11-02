@@ -692,16 +692,13 @@ sub write {
   foreach my $study (@{$isatab->{studies}}) {
 
     # SAMPLES #
-    $self->write_study_or_assay($study->{study_file_name}, $study, ['Source Name', 'Sample Name']);
+    $self->write_study_or_assay($study->{study_file_name}, $study);
 
     # ASSAYS #
     # to do...
 
     foreach my $assay (@{$study->{study_assays}}) {
-
-      print "STARTING ASSAY $assay->{study_assay_file_name}\n";
-
-      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay, [keys %reusable_node_types, keys %non_reusable_node_types]);
+      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay);
     }
   }
 }
@@ -758,21 +755,22 @@ sub write_investigation_section {
 
 writes out s_samples.txt and a_*.txt files
 
-args: filename, study_or_assay_ref, material_headings_arrayref
+args: filename, study_or_assay_ref, custom_headings_hashref
 
-where material headings might be [ 'Sample Name', 'Assay Name', ... ]
+see parse_study_or_assay for details about custom_headings_hashref
+NOTE: it must be an ordered hashref (see ordered_hashref()) if you want to preserve column order.
 
 =cut
 
 sub write_study_or_assay {
-  my ($self, $filename, $ref, $material_headings) = @_;
+  my ($self, $filename, $ref, $custom_column_types) = @_;
 
   my $filehandle;
   my $directory = $self->directory;
   open($filehandle, ">", "$directory/$filename" ) || die "problem opening $directory/$filename for writing\n";
 
   my ($r, $h, $table) = ([], [], Data::Table->new());
-  rowify_study_or_assay($ref, $r, $h, $table, $material_headings);
+  rowify_study_or_assay($ref, $r, $h, $table, $custom_column_types);
 
   my $table_data = $table->data;
   my @verbose_headers = $table->header;
@@ -791,19 +789,25 @@ sub write_study_or_assay {
 # $h is the current row's headings arrayref
 #
 sub rowify_study_or_assay {
-  my ($ref, $r, $h, $table, $material_headings) = @_;
+  my ($ref, $r, $h, $table, $custom_column_types) = @_;
+
+  # default headings for both sample and assay files
+  my @potential_material_headings = (keys %reusable_node_types, keys %non_reusable_node_types);
+  # add custom headings for reusable/nonreusable node types only if provided
+  push @potential_material_headings, grep { $custom_column_types->{$_} =~ /node$/ } keys %$custom_column_types
+    if (defined $custom_column_types);
 
   my $terminated = 1;
   my %seen_materials_key; # don't process "Array Design Ref/REF" twice
-  foreach my $material_heading (@$material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
-    my $materials_key = $reusable_node_types{$material_heading} || $non_reusable_node_types{$material_heading}; # e.g. 'sources', 'samples', 'assays'
+  foreach my $material_heading (@potential_material_headings) { # e.g. 'Source Name', 'Sample Name', 'Assay Name'
+    my $materials_key = $reusable_node_types{$material_heading} // $non_reusable_node_types{$material_heading} // pluralise_custom_column($material_heading); # e.g. 'sources', 'samples', 'assays', or a custom heading like 'phenotypes'
     next if ($seen_materials_key{$materials_key}++);
     if ($ref->{$materials_key}) {
-print "going into $materials_key\n";
-print "headers : ".join(';', @$h)."\n";
+#print "going into $materials_key\n";
+#print "headers : ".join(';', @$h)."\n";
       foreach my $material_name (href_keys($ref->{$materials_key})) {
 	my $material = $ref->{$materials_key}{$material_name};
-print "processing $material_name ($materials_key)\n";
+#print "processing $material_name ($materials_key)\n";
 	# for each material
 	my @r = @$r; # make a copy
 	my @h = @$h; # of the row so far
@@ -828,6 +832,31 @@ print "processing $material_name ($materials_key)\n";
 	    push @r, $mtdata->{term_source_ref} // '', $mtdata->{term_accession_number} // '';
 	  }
 	}
+
+	# custom attributes (e.g. Observable from VectorBase's phenotype sheets)
+	foreach my $custom_attribute (grep { $custom_column_types->{$_} eq 'attribute' } keys %$custom_column_types) {
+	  my $custom_key = lcu($custom_attribute);
+	  if ($material->{$custom_key}) {
+	    my $custom_attribute_heading = "$material_heading :: $custom_attribute";
+	    my $custom_data = $material->{$custom_key};
+	    push @h, $custom_attribute_heading;
+	    push @r, $custom_data->{value} // '';
+	    if (exists $custom_data->{term_source_ref} || exists $custom_data->{term_accession_number}) {
+	      push @h, "$custom_attribute_heading :: Term Source REF", "$custom_attribute_heading :: Term Accession Number";
+	      push @r, $custom_data->{term_source_ref} // '', $custom_data->{term_accession_number} // '';
+	    } elsif (exists $custom_data->{unit}) {
+	      my $unit_heading = "$custom_attribute_heading :: Unit";
+	      push @h, $unit_heading;
+	      push @r, $custom_data->{unit}{value};
+	      if (exists $custom_data->{unit}{term_source_ref} || exists $custom_data->{unit}{term_accession_number}) {
+		push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
+		push @r, $custom_data->{unit}{term_source_ref} // '', $custom_data->{unit}{term_accession_number} // '';
+	      }
+	    }
+	  }
+
+	}
+
 
 	# Comments
 	foreach my $comment (href_keys($material->{comments})) {
@@ -918,7 +947,7 @@ print "processing $material_name ($materials_key)\n";
 	  }
 	}
 
-	rowify_study_or_assay($material, \@r, \@h, $table, $material_headings);
+	rowify_study_or_assay($material, \@r, \@h, $table, $custom_column_types);
 	$terminated = 0;
       }
 
@@ -926,8 +955,8 @@ print "processing $material_name ($materials_key)\n";
   }
   if ($terminated) {  # add the current row into the final table
     my $numPrevRows = $table->nofRow();
-print "current headers: ".join(';', $table->header)."\n";
-print "new headers    : ".join(';', @$h)."\n";
+#print "current headers: ".join(';', $table->header)."\n";
+#print "new headers    : ".join(';', @$h)."\n";
 #   print "adding new row after $numPrevRows previous............\n";
 
     my $columnIndex = 0;
