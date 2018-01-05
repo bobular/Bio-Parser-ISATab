@@ -857,34 +857,6 @@ sub rowify_study_or_assay {
 
 	}
 
-
-	# Comments
-	foreach my $comment (href_keys($material->{comments})) {
-	  my $comment_heading = "$material_heading :: Comment [$comment]";
-	  push @h, $comment_heading;
-	  push @r, $material->{comments}{$comment};
-	}
-
-	# Characteristics
-	foreach my $characteristic (href_keys($material->{characteristics})) {
-	  my $cdata = $material->{characteristics}{$characteristic};
-	  my $characteristic_heading = "$material_heading :: Characteristics [$characteristic]";
-	  push @h, $characteristic_heading;
-	  push @r, $cdata->{value};
-	  if (exists $cdata->{term_source_ref} || exists $cdata->{term_accession_number}) {
-	    push @h, "$characteristic_heading :: Term Source REF", "$characteristic_heading :: Term Accession Number";
-	    push @r, $cdata->{term_source_ref} // '', $cdata->{term_accession_number} // '';
-	  } elsif (exists $cdata->{unit}) {
-	    my $unit_heading = "$characteristic_heading :: Unit";
-	    push @h, $unit_heading;
-	    push @r, $cdata->{unit}{value};
-	    if (exists $cdata->{unit}{term_source_ref} || exists $cdata->{unit}{term_accession_number}) {
-	      push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
-	      push @r, $cdata->{unit}{term_source_ref} // '', $cdata->{unit}{term_accession_number} // '';
-	    }
-	  }
-	}
-
 	# Protocols
 	foreach my $protocol (href_keys($material->{protocols})) {
 	  my $pdata = $material->{protocols}{$protocol};
@@ -923,6 +895,33 @@ sub rowify_study_or_assay {
 	      }
 	    }
 	  }
+	  }
+	}
+
+	# Comments
+	foreach my $comment (href_keys($material->{comments})) {
+	  my $comment_heading = "$material_heading :: Comment [$comment]";
+	  push @h, $comment_heading;
+	  push @r, $material->{comments}{$comment};
+	}
+
+	# Characteristics
+	foreach my $characteristic (href_keys($material->{characteristics})) {
+	  my $cdata = $material->{characteristics}{$characteristic};
+	  my $characteristic_heading = "$material_heading :: Characteristics [$characteristic]";
+	  push @h, $characteristic_heading;
+	  push @r, $cdata->{value};
+	  if (exists $cdata->{term_source_ref} || exists $cdata->{term_accession_number}) {
+	    push @h, "$characteristic_heading :: Term Source REF", "$characteristic_heading :: Term Accession Number";
+	    push @r, $cdata->{term_source_ref} // '', $cdata->{term_accession_number} // '';
+	  } elsif (exists $cdata->{unit}) {
+	    my $unit_heading = "$characteristic_heading :: Unit";
+	    push @h, $unit_heading;
+	    push @r, $cdata->{unit}{value};
+	    if (exists $cdata->{unit}{term_source_ref} || exists $cdata->{unit}{term_accession_number}) {
+	      push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
+	      push @r, $cdata->{unit}{term_source_ref} // '', $cdata->{unit}{term_accession_number} // '';
+	    }
 	  }
 	}
 
