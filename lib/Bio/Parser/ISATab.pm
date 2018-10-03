@@ -129,6 +129,7 @@ my %section_headings = (
 			'INVESTIGATION CONTACTS' => 'investigation_contacts',
 			'STUDY' => 'study',
 			'STUDY DESIGN DESCRIPTORS' => 'study_designs',
+			'STUDY TAGS' => 'study_tags',
 			'STUDY PUBLICATIONS' => 'study_publications',
 			'STUDY FACTORS' => 'study_factors',
 			'STUDY ASSAYS' => 'study_assays',
@@ -627,6 +628,14 @@ sub write {
 					 'STUDY',
 					 'Study Identifier', 'Study Title', 'Study Description',
 					 'Study Submission Date', 'Study Public Release Date', 'Study File Name');
+
+      $self->write_investigation_section($investigation_handle,
+					 $study->{study_tags},
+					 'STUDY TAGS',
+					 'Study Tag',
+					 'Study Tag Term Accession Number',
+					 'Study Tag Term Source REF');
+
       $self->write_investigation_section($investigation_handle,
 					 $study->{study_designs},
 					 'STUDY DESIGN DESCRIPTORS',
@@ -954,8 +963,8 @@ sub rowify_study_or_assay {
   }
   if ($terminated) {  # add the current row into the final table
     my $numPrevRows = $table->nofRow();
-#print "current headers: ".join(';', $table->header)."\n";
-#print "new headers    : ".join(';', @$h)."\n";
+print "current headers: ".join(';', $table->header)."\n";
+print "new headers    : ".join(';', @$h)."\n";
 #   print "adding new row after $numPrevRows previous............\n";
 
     my $columnIndex = 0;
@@ -989,7 +998,7 @@ sub rowify_study_or_assay {
       $row[$columnIndex] = $data;
     }
 
-#    print "header/row\n".join("\t",$table->header)."\n".join("\t",@row)."\n\n";
+    print "header/row\n".join("\t",$table->header)."\n".join("\t",@row)."\n\n";
     $table->addRow(\@row);
   }
 }
