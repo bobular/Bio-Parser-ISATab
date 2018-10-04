@@ -963,8 +963,8 @@ sub rowify_study_or_assay {
   }
   if ($terminated) {  # add the current row into the final table
     my $numPrevRows = $table->nofRow();
-print "current headers: ".join(';', $table->header)."\n";
-print "new headers    : ".join(';', @$h)."\n";
+#print "current headers: ".join(';', $table->header)."\n";
+#print "new headers    : ".join(';', @$h)."\n";
 #   print "adding new row after $numPrevRows previous............\n";
 
     my $columnIndex = 0;
@@ -998,7 +998,7 @@ print "new headers    : ".join(';', @$h)."\n";
       $row[$columnIndex] = $data;
     }
 
-    print "header/row\n".join("\t",$table->header)."\n".join("\t",@row)."\n\n";
+#    print "header/row\n".join("\t",$table->header)."\n".join("\t",@row)."\n\n";
     $table->addRow(\@row);
   }
 }
