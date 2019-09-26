@@ -75,6 +75,14 @@ Required.
 Location of the ISA-Tab directory, containing the i_xxxx.txt,
 s_yyyy.txt and a_zzzz.txt files.
 
+=head2 protocols_first
+
+1 or 0
+
+not required, default = 0
+
+when true, Protocol REF columns will be OUTPUT (only at this point) before the Assay Name column
+
 =cut
 
 #
@@ -87,6 +95,12 @@ has 'directory' => (
 		    is => 'ro',
 		    required => 1,
 		   );
+
+has 'protocols_first' => (
+                          is => 'ro',
+                          required => 0,
+                          default => 0
+                         );
 
 
 =head2 investigation_file
@@ -701,13 +715,13 @@ sub write {
   foreach my $study (@{$isatab->{studies}}) {
 
     # SAMPLES #
-    $self->write_study_or_assay($study->{study_file_name}, $study);
+    $self->write_study_or_assay($study->{study_file_name}, $study, {});
 
     # ASSAYS #
     # to do...
 
     foreach my $assay (@{$study->{study_assays}}) {
-      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay);
+      $self->write_study_or_assay($assay->{study_assay_file_name}, $assay, {});
     }
   }
 }
@@ -779,7 +793,7 @@ sub write_study_or_assay {
   open($filehandle, ">", "$directory/$filename" ) || die "problem opening $directory/$filename for writing\n";
 
   my ($r, $h, $table) = ([], [], Data::Table->new());
-  rowify_study_or_assay($ref, $r, $h, $table, $custom_column_types);
+  rowify_study_or_assay($ref, $r, $h, $table, $custom_column_types, $self->protocols_first);
 
   my $table_data = $table->data;
   my @verbose_headers = $table->header;
@@ -798,7 +812,7 @@ sub write_study_or_assay {
 # $h is the current row's headings arrayref
 #
 sub rowify_study_or_assay {
-  my ($ref, $r, $h, $table, $custom_column_types) = @_;
+  my ($ref, $r, $h, $table, $custom_column_types, $protocols_first) = @_;
 
   # default headings for both sample and assay files
   my @potential_material_headings = (keys %reusable_node_types, keys %non_reusable_node_types);
@@ -821,6 +835,9 @@ sub rowify_study_or_assay {
 	my @r = @$r; # make a copy
 	my @h = @$h; # of the row so far
 
+        goto PROTOCOLS if ($protocols_first);
+
+      MATERIAL:
 	# now add more columns of data as required
 	# Material or Assay Name
 	push @h, $material_heading;
@@ -866,6 +883,9 @@ sub rowify_study_or_assay {
 
 	}
 
+        goto COMMENTS if ($protocols_first);
+
+      PROTOCOLS:
 	# Protocols
 	foreach my $protocol (href_keys($material->{protocols})) {
 	  my $pdata = $material->{protocols}{$protocol};
@@ -886,27 +906,30 @@ sub rowify_study_or_assay {
 	  }
 	  # Protocol Parameter Values
 	  if ($pdata->{parameter_values}) {
-	  foreach my $parameter (href_keys($pdata->{parameter_values})) {
-	    my $pvdata = $pdata->{parameter_values}{$parameter};
-	    my $parameter_value_heading = "$protocol_heading :: Parameter Value [$parameter]";
-	    push @h, $parameter_value_heading;
-	    push @r, $pvdata->{value};
-	    if (exists $pvdata->{term_source_ref} || exists $pvdata->{term_accession_number}) {
-	      push @h, "$parameter_value_heading :: Term Source REF", "$parameter_value_heading :: Term Accession Number";
-	      push @r, $pvdata->{term_source_ref} // '', $pvdata->{term_accession_number} // '';
-	    } elsif (exists $pvdata->{unit}) {
-	      my $unit_heading = "$parameter_value_heading :: Unit";
-	      push @h, $unit_heading;
-	      push @r, $pvdata->{unit}{value};
-	      if (exists $pvdata->{unit}{term_source_ref} || exists $pvdata->{unit}{term_accession_number}) {
-		push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
-		push @r, $pvdata->{unit}{term_source_ref} // '', $pvdata->{unit}{term_accession_number} // '';
-	      }
-	    }
-	  }
+            foreach my $parameter (href_keys($pdata->{parameter_values})) {
+              my $pvdata = $pdata->{parameter_values}{$parameter};
+              my $parameter_value_heading = "$protocol_heading :: Parameter Value [$parameter]";
+              push @h, $parameter_value_heading;
+              push @r, $pvdata->{value};
+              if (exists $pvdata->{term_source_ref} || exists $pvdata->{term_accession_number}) {
+                push @h, "$parameter_value_heading :: Term Source REF", "$parameter_value_heading :: Term Accession Number";
+                push @r, $pvdata->{term_source_ref} // '', $pvdata->{term_accession_number} // '';
+              } elsif (exists $pvdata->{unit}) {
+                my $unit_heading = "$parameter_value_heading :: Unit";
+                push @h, $unit_heading;
+                push @r, $pvdata->{unit}{value};
+                if (exists $pvdata->{unit}{term_source_ref} || exists $pvdata->{unit}{term_accession_number}) {
+                  push @h, "$unit_heading :: Term Source REF", "$unit_heading :: Term Accession Number";
+                  push @r, $pvdata->{unit}{term_source_ref} // '', $pvdata->{unit}{term_accession_number} // '';
+                }
+              }
+            }
 	  }
 	}
 
+        goto MATERIAL if ($protocols_first);
+
+      COMMENTS:
 	# Comments
 	foreach my $comment (href_keys($material->{comments})) {
 	  my $comment_heading = "$material_heading :: Comment [$comment]";
@@ -955,7 +978,7 @@ sub rowify_study_or_assay {
 	  }
 	}
 
-	rowify_study_or_assay($material, \@r, \@h, $table, $custom_column_types);
+	rowify_study_or_assay($material, \@r, \@h, $table, $custom_column_types, $protocols_first);
 	$terminated = 0;
       }
 
