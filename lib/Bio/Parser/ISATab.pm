@@ -883,7 +883,7 @@ sub rowify_study_or_assay {
 
 	}
 
-        goto COMMENTS if ($protocols_first);
+        goto COMMENTS if ($protocols_first && $material_heading ne 'Source Name');
 
       PROTOCOLS:
 	# Protocols
@@ -927,7 +927,7 @@ sub rowify_study_or_assay {
 	  }
 	}
 
-        goto MATERIAL if ($protocols_first);
+        goto MATERIAL if ($protocols_first && $material_heading ne 'Source Name');
 
       COMMENTS:
 	# Comments
