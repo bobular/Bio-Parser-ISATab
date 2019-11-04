@@ -835,7 +835,7 @@ sub rowify_study_or_assay {
 	my @r = @$r; # make a copy
 	my @h = @$h; # of the row so far
 
-        goto PROTOCOLS if ($protocols_first);
+        goto PROTOCOLS if ($protocols_first && $material_heading ne 'Source Name');
 
       MATERIAL:
 	# now add more columns of data as required
