@@ -50,6 +50,11 @@ my $study =
 
 $writer->write_study_or_assay('s_MULTIPLE_SAMPLES.txt', $study, {});
 
+my $parser = Bio::Parser::ISATab->new(directory=>$output_directory);
 
-ok(-e 't/temp-output/s_MULTIPLE_SAMPLES.txt');
+my $study2 = $parser->parse_study_or_assay('s_MULTIPLE_SAMPLES.txt');
+
+
+is_deeply($study, $study2, "s_MULTIPLE_SAMPLES.txt read back identically");
+
 
