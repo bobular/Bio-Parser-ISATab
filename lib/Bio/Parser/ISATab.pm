@@ -812,8 +812,9 @@ sub write_study_or_assay {
 # $h is the current row's headings arrayref
 #
 sub rowify_study_or_assay {
-  my ($ref, $r, $h, $table, $custom_column_types, $protocols_first) = @_;
-
+  my ($ref, $r, $h, $table, $custom_column_types, $protocols_first, $depth) = @_;
+  $depth //= 0;
+  
   # default headings for both sample and assay files
   my @potential_material_headings = (keys %reusable_node_types, keys %non_reusable_node_types);
   # add custom headings for reusable/nonreusable node types only if provided
@@ -840,7 +841,10 @@ sub rowify_study_or_assay {
       MATERIAL:
 	# now add more columns of data as required
 	# Material or Assay Name
-	push @h, $material_heading;
+	# Use the depth_n prefix to allow multiple "Sample Name" columns
+	# (it will allow other entity types to do that also, but be aware there will be
+	# problems if the entity tree has different topologies within the "file")
+	push @h, "depth_$depth :: $material_heading";
 	push @r, $material_name;
 
 	if (nonempty($material->{description})) {
@@ -978,7 +982,7 @@ sub rowify_study_or_assay {
 	  }
 	}
 
-	rowify_study_or_assay($material, \@r, \@h, $table, $custom_column_types, $protocols_first);
+	rowify_study_or_assay($material, \@r, \@h, $table, $custom_column_types, $protocols_first, $depth+1);
 	$terminated = 0;
       }
 
