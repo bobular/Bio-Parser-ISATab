@@ -835,7 +835,8 @@ sub rowify_study_or_assay {
 	# for each material
 	my @r = @$r; # make a copy
 	my @h = @$h; # of the row so far
-
+	my $unique_material_heading = "depth_$depth :: $material_heading";
+	
         goto PROTOCOLS if ($protocols_first && $material_heading ne 'Source Name');
 
       MATERIAL:
@@ -844,7 +845,7 @@ sub rowify_study_or_assay {
 	# Use the depth_n prefix to allow multiple "Sample Name" columns
 	# (it will allow other entity types to do that also, but be aware there will be
 	# problems if the entity tree has different topologies within the "file")
-	push @h, "depth_$depth :: $material_heading";
+	push @h, $unique_material_heading;
 	push @r, $material_name;
 
 	if (nonempty($material->{description})) {
@@ -853,7 +854,7 @@ sub rowify_study_or_assay {
 	}
 
 	if ($material->{material_type}) {
-	  my $material_type_heading = "$material_heading :: Material Type";
+	  my $material_type_heading = "$unique_material_heading :: Material Type";
 	  my $mtdata = $material->{material_type};
 	  push @h, $material_type_heading;
 	  push @r, $mtdata->{value} // '';
@@ -867,7 +868,7 @@ sub rowify_study_or_assay {
 	foreach my $custom_attribute (grep { $custom_column_types->{$_} eq 'attribute' } keys %$custom_column_types) {
 	  my $custom_key = lcu($custom_attribute);
 	  if ($material->{$custom_key}) {
-	    my $custom_attribute_heading = "$material_heading :: $custom_attribute";
+	    my $custom_attribute_heading = "$unique_material_heading :: $custom_attribute";
 	    my $custom_data = $material->{$custom_key};
 	    push @h, $custom_attribute_heading;
 	    push @r, $custom_data->{value} // '';
@@ -897,7 +898,7 @@ sub rowify_study_or_assay {
 	  # this is because pairing them up with Parameter Values is tricky otherwise
 	  # maybe review this later if we don't have any data which would
 	  # fail if we remove the $protocol in the line below.
-	  my $protocol_heading = "$material_heading :: $protocol :: Protocol REF";
+	  my $protocol_heading = "$unique_material_heading :: $protocol :: Protocol REF";
 	  push @h, $protocol_heading;
 	  push @r, $protocol;
 	  if (exists $pdata->{performer}) {
@@ -936,7 +937,7 @@ sub rowify_study_or_assay {
       COMMENTS:
 	# Comments
 	foreach my $comment (href_keys($material->{comments})) {
-	  my $comment_heading = "$material_heading :: Comment [$comment]";
+	  my $comment_heading = "$unique_material_heading :: Comment [$comment]";
 	  push @h, $comment_heading;
 	  push @r, $material->{comments}{$comment};
 	}
@@ -944,7 +945,7 @@ sub rowify_study_or_assay {
 	# Characteristics
 	foreach my $characteristic (href_keys($material->{characteristics})) {
 	  my $cdata = $material->{characteristics}{$characteristic};
-	  my $characteristic_heading = "$material_heading :: Characteristics [$characteristic]";
+	  my $characteristic_heading = "$unique_material_heading :: Characteristics [$characteristic]";
 	  push @h, $characteristic_heading;
 	  push @r, $cdata->{value};
 	  if (exists $cdata->{term_source_ref} || exists $cdata->{term_accession_number}) {
@@ -964,7 +965,7 @@ sub rowify_study_or_assay {
 	# Factor Values
 	foreach my $factor_value (href_keys($material->{factor_values})) {
 	  my $fvdata = $material->{factor_values}{$factor_value};
-	  my $factor_value_heading = "$material_heading :: Factor Value [$factor_value]";
+	  my $factor_value_heading = "$unique_material_heading :: Factor Value [$factor_value]";
 	  push @h, $factor_value_heading;
 	  push @r, $fvdata->{value};
 

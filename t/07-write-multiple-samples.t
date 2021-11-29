@@ -5,7 +5,7 @@ use Bio::Parser::ISATab;
 use Text::CSV_XS;
 
 #
-# run with 'prove' (I always forget what it's called)
+# run with 'prove -l' (I always forget what it's called)
 #
 
 my $output_directory = './t/temp-output';
@@ -26,21 +26,25 @@ my $study =
        dip1 =>
        {
 	characteristics => { volume => { value => 100, unit => { value => 'ml' } } },
-	samples => # level 2
+	material_type => { value => 'pond water' },
+        samples => # level 2
 	{
 	 tadpoles =>
 	 {
-	  characteristics => { colour => { value => 'brown' } }
+	  characteristics => { colour => { value => 'brown' } },
+	  material_type => { value => 'specimen' },
 	 },
 	 larvae =>
 	 {
-	  characteristics => { colour => { value => 'yellow' } }
+	  characteristics => { colour => { value => 'yellow' } },
+	  material_type => { value => 'specimen' },
 	 },
 	},
        },
        dip2 =>
        {
 	characteristics => { volume => { value => 200, unit => { value => 'ml' } } },
+	material_type => { value => 'pond water' },
        }
       }
      },
