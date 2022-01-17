@@ -406,6 +406,7 @@ sub parse_study_or_assay {
 
       my $context = $study_file; # e.g. "s_samples -> foo1.sample -> Characteristics [foo]" that helps debugging overwrite problems
 
+      my $skip_this_node = 0;
       for (my $i=0; $i<$n; $i++) {
 	my $header = $headers->[$i];
 	my $value = defined $row->[$i] ? $row->[$i] : '';
@@ -423,10 +424,17 @@ sub parse_study_or_assay {
 	    # now set the current node to be this child
 	    $current_node = $current_node->{$node_type}{$value};
 	    $last_biological_material = $current_node if ($node_type =~ /^(source|sample|extract|labeled)/); # hack alert!
+	    $skip_this_node = 0;
+	  } else {
+	    $skip_this_node = 1;
 	  }
 	  undef $current_attribute;
 	  undef $current_protocol;
-	  $context = "$study_file -> $header -> $value";
+	  $context = "$study_file -> $header -> '$value'";
+	} elsif ($skip_this_node) {
+	  # if a reusable node had an empty Name then we shouldn't process any
+	  # characteristics or other nodes hanging off it, sorry!
+	  next;
 	} elsif ($non_reusable_node_types{$header} ||
 		 (defined $custom_column_types->{$header} &&
 		  $custom_column_types->{$header} eq 'non-reusable node')) {
