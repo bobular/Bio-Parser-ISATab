@@ -857,7 +857,7 @@ sub rowify_study_or_assay {
 	push @r, $material_name;
 
 	if (nonempty($material->{description})) {
-	  push @h, "$material_heading :: Description";
+	  push @h, "$unique_material_heading :: Description";
 	  push @r, $material->{description};
 	}
 
